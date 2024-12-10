@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "./Header";
 
 const Signup = () => {
   const [formdata, setformdata] = useState({
@@ -65,111 +66,225 @@ const Signup = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "auto", padding: "1em" }}>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username:
-          <input
-            type="text"
-            name="username"
-            value={formdata.username}
-            required
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5em", marginTop: "0.2em" }}
-          />
-        </label>
-        <br />
-
-        <label>
-          Full Names:
-          <input
-            type="text"
-            name="name"
-            value={formdata.name}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5em", marginTop: "0.2em" }}
-          />
-        </label>
-        <br />
-
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formdata.email}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5em", marginTop: "0.2em" }}
-          />
-        </label>
-
-        <br />
-        <label>
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={formdata.password}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5em", marginTop: "0.2em" }}
-          />
-        </label>
-
-        <br />
-        <label>
-          Role:
-          <select name="role" value={formdata.role} onChange={handleRoleChange}>
-            <option value="">Select a Role</option>
-            <option value="STUDENT">STUDENT</option>
-            <option value="TEACHER">Teacher</option>
-            <option value="ADMIN">Admin</option>
-          </select>
-        </label>
-        <br />
-
-        <label>
-          Skills:
-          <input
-            type="text"
-            name="skills"
-            value={formdata.skills}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5em", marginTop: "0.2em" }}
-          />
-        </label>
-        <br />
-        <label>
-          Enter a profileImage:
-          <input
-            type="file"
-            name="ProfileImage"
-            onChange={(e) =>
-              setformdata({ ...formdata, ProfileImage: e.target.files[0] })
-            }
-            style={{ width: "100%", padding: "0.5em", marginTop: "0.2em" }}
-          />
-        </label>
-        <br />
-        <button
-          type="submit"
-          disabled={loading}
-          value="Submit"
-          style={{
-            padding: "0.5em 1em",
-            backgroundColor: loading ? "#ccc" : "#007BFF",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
+    <>
+      <Header />
+      <div
+        style={{
+          maxWidth: "400px",
+          margin: "auto",
+          padding: "1em",
+          marginTop: "70px", // Adjust height to account for the fixed header
+        }}
+      >
+        <h2
+          style={{ textAlign: "center", color: "#333", marginBottom: "1rem" }}
         >
-          {loading ? "Saving..." : "Save User"}
-        </button>
-      </form>
-      {/* ToastContainer with top-center position */}
-      <ToastContainer position="top-center" />
-    </div>
+          Sign Up
+        </h2>
+        <form onSubmit={handleSubmit} style={{ fontSize: "0.9rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Username:
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formdata.username}
+              required
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Full Names:
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formdata.name}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Email:
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formdata.email}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Password:
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formdata.password}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Role:
+            </label>
+            <select
+              name="role"
+              value={formdata.role}
+              onChange={handleRoleChange}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                backgroundColor: "#fff",
+                boxSizing: "border-box",
+              }}
+            >
+              <option value="">Select a Role</option>
+              <option value="STUDENT">Student</option>
+              <option value="TEACHER">Teacher</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Skills:
+            </label>
+            <input
+              type="text"
+              name="skills"
+              value={formdata.skills}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#555",
+              }}
+            >
+              Profile Image:
+            </label>
+            <input
+              type="file"
+              name="ProfileImage"
+              onChange={(e) =>
+                setformdata({ ...formdata, ProfileImage: e.target.files[0] })
+              }
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                backgroundColor: "#fff",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: "0.8rem",
+              backgroundColor: loading ? "#ccc" : "#007BFF",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: loading ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {loading ? "Saving..." : "Save User"}
+          </button>
+        </form>
+        <ToastContainer position="top-center" />
+      </div>
+    </>
   );
 };
 
