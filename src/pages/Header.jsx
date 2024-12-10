@@ -43,7 +43,7 @@ const Header = () => {
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="/" aria-current="page">
-              LogOut
+              Log out
             </Link>
           </li>
         </ul>
