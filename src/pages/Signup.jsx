@@ -33,15 +33,32 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+  
+    // Create a FormData object
+    const formData = new FormData();
+  
+    // Append user data as a JSON string
+    const user = {
+      username: formdata.username,
+      name: formdata.name,
+      email: formdata.email,
+      password: formdata.password,
+      role: formdata.role,
+      skills: formdata.skills,
+    };
+    formData.append("user", JSON.stringify(user));
+  
+    // Append the profile image if it exists
+    if (formdata.ProfileImage) {
+      formData.append("imageFile", formdata.ProfileImage);
+    }
+  
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formdata),
+        body: formData, // Send the FormData object
       });
-
+  
       if (response.ok) {
         toast.success("User created successfully");
         setformdata({
@@ -64,6 +81,7 @@ const Signup = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <>
