@@ -6,6 +6,13 @@ import UpdateProfile from "../pages/UpdateProfile";
 import path from "path";
 import CreateCourse from "../pages/Instructor/CreateCourse";
 import CategoryPage from "../pages/Instructor/CategoryPage";
+import LearnerDashboard from "../pages/Student/LearnerDashboard";
+import CourseBrowsingPage from "../pages/Student/CourseBrowsing";
+import CourseDetailPage from "../pages/Student/CourseDetail";
+import AssessmentSubmissionPage from "../pages/Student/Assessment";
+import AchievementsPage from "../pages/Student/Achievements";
+import InboxPage from "../pages/Student/Inbox";
+import MessageThreadPage from "../pages/Student/MessageThread";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +43,36 @@ const router = createBrowserRouter([
       {
         path: "category",
         element: <CategoryPage />,
+      },
+    ],
+  },
+  {
+    path: "/student",
+    children: [
+      {
+        path: "dashboard",
+        element: <LearnerDashboard />,
+      },
+      {
+        path: "Browsing",
+        element: <CourseBrowsingPage />,
+      },
+      {
+        path: "course",
+        element: <CourseDetailPage />,
+      },
+      {
+        path: "assessment",
+        element: <AssessmentSubmissionPage />,
+      },
+      {
+        path: "achievement",
+        element: <AchievementsPage />,
+      },
+      { path: "Inbox", element: <InboxPage /> },
+      {
+        path: "message",
+        element: <MessageThreadPage />,
       },
     ],
   },
