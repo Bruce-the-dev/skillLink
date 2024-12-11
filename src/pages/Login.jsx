@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import Header from "./Header";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formdata, setFormData] = useState({
     username: "",
     password: "",
   });
-  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
   const [LoggedIn, setLoggedIn] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,11 +39,14 @@ const Login = () => {
       }
       const data = await response.json();
       toast.success("User Logged in successfully");
+
       setFormData({
         username: "",
         password: "",
       });
       setLoggedIn(true);
+      const userId = data.userId; // Extract the user ID from the response data
+      navigate(`/profile/${userId}`); // Redirect to /profile/{userId}
       console.log(response.data);
     } catch (e) {
       toast.error("An error occurred while connecting to the server.");
