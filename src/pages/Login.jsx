@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Header from "./Header";
-import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import Header from "./Header";
 
 const Login = () => {
   const [formdata, setFormData] = useState({
@@ -27,6 +27,7 @@ const Login = () => {
         },
         body: JSON.stringify(formdata),
       });
+  
       if (!response.ok) {
         if (response.status === 401) {
           toast.error("Invalid password");
@@ -37,23 +38,31 @@ const Login = () => {
         }
         return;
       }
+  
       const data = await response.json();
-      toast.success("User Logged in successfully");
-
+      toast.success("User logged in successfully");
+  
       setFormData({
         username: "",
         password: "",
       });
       setLoggedIn(true);
-      const userId = data.userId; // Extract the user ID from the response data
-      navigate(`/profile/${userId}`); // Redirect to /profile/{userId}
-      console.log(response.data);
+  
+      // Redirect based on role
+      const role = data.role; 
+      const userId = data.userId;
+      if (role === "TEACHER") {
+        navigate(`/Instructor/InstructorDashboard/${userId}`);
+      } else if (role === "STUDENT") {
+        navigate(`/Student/LearnerDashboard/${userId}`);
+      } else {
+        navigate(`/Signup/${userId}`); // Default redirection
+      }
     } catch (e) {
       toast.error("An error occurred while connecting to the server.");
     }
-    // console.log("Form Submitted:", formdata);
-    // alert("Login form submitted (data not sent to backend).");
   };
+  
 
   return (
     <div
