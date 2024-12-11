@@ -12,6 +12,7 @@ import AssessmentSubmissionPage from "../pages/Student/Assessment";
 import AchievementsPage from "../pages/Student/Achievements";
 import InboxPage from "../pages/Student/Inbox";
 import MessageThreadPage from "../pages/Student/MessageThread";
+import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 
 const router = createBrowserRouter([
   {
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
     path: "/student",
     children: [
       {
-        path: "dashboard",
+        path: "",
         element: <LearnerDashboard />,
       },
       {
@@ -72,6 +73,19 @@ const router = createBrowserRouter([
       {
         path: "message",
         element: <MessageThreadPage />,
+      },
+    ],
+  },
+  {
+    path: "/instructor",
+    children: [
+      {
+        path: "",
+        element: <InstructorDashboard />,
+      },
+      {
+        path: "login",
+        element: <Login />,
       },
     ],
   },
