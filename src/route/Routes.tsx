@@ -3,7 +3,6 @@ import { createBrowserRouter } from "react-router-dom";
 import Signup from "../pages/Signup";
 import Login from "../pages/Login";
 import UpdateProfile from "../pages/UpdateProfile";
-import path from "path";
 import CreateCourse from "../pages/Instructor/CreateCourse";
 import CategoryPage from "../pages/Instructor/CategoryPage";
 import LearnerDashboard from "../pages/Student/LearnerDashboard";
