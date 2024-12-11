@@ -10,8 +10,8 @@ import CourseBrowsingPage from "../pages/Student/CourseBrowsing";
 import CourseDetailPage from "../pages/Student/CourseDetail";
 import AssessmentSubmissionPage from "../pages/Student/Assessment";
 import AchievementsPage from "../pages/Student/Achievements";
-import InboxPage from "../pages/Student/Inbox";
-import MessageThreadPage from "../pages/Student/MessageThread";
+import InboxPage from "../pages/Inbox";
+import MessageThreadPage from "../pages/MessageThread";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 
 const router = createBrowserRouter([
