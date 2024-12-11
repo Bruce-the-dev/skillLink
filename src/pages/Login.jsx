@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import Header from "./Header";
+import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
   const [formdata, setFormData] = useState({
     username: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [LoggedIn, setLoggedIn] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -13,10 +16,39 @@ const Login = () => {
       [name]: value,
     });
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formdata);
-    alert("Login form submitted (data not sent to backend).");
+    try {
+      const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formdata),
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error("Invalid password");
+        } else if (response.status === 404) {
+          toast.error("User not found");
+        } else {
+          toast.error("An unexpected error occurred");
+        }
+        return;
+      }
+      const data = await response.json();
+      toast.success("User Logged in successfully");
+      setFormData({
+        username: "",
+        password: "",
+      });
+      setLoggedIn(true);
+      console.log(response.data);
+    } catch (e) {
+      toast.error("An error occurred while connecting to the server.");
+    }
+    // console.log("Form Submitted:", formdata);
+    // alert("Login form submitted (data not sent to backend).");
   };
 
   return (
@@ -31,6 +63,7 @@ const Login = () => {
         boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
       }}
     >
+      <ToastContainer />
       <Header />
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
