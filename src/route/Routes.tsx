@@ -1,18 +1,18 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
-import Signup from "../pages/Signup";
-import Login from "../pages/Login";
-import UpdateProfile from "../pages/UpdateProfile";
-import CreateCourse from "../pages/Instructor/CreateCourse";
+import InboxPage from "../pages/Inbox";
 import CategoryPage from "../pages/Instructor/CategoryPage";
-import LearnerDashboard from "../pages/Student/LearnerDashboard";
+import CreateCourse from "../pages/Instructor/CreateCourse";
+import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
+import Login from "../pages/Login";
+import MessageThreadPage from "../pages/MessageThread";
+import Signup from "../pages/Signup";
+import AchievementsPage from "../pages/Student/Achievements";
+import AssessmentSubmissionPage from "../pages/Student/Assessment";
 import CourseBrowsingPage from "../pages/Student/CourseBrowsing";
 import CourseDetailPage from "../pages/Student/CourseDetail";
-import AssessmentSubmissionPage from "../pages/Student/Assessment";
-import AchievementsPage from "../pages/Student/Achievements";
-import InboxPage from "../pages/Inbox";
-import MessageThreadPage from "../pages/MessageThread";
-import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
+import LearnerDashboard from "../pages/Student/LearnerDashboard";
+import UpdateProfile from "../pages/UpdateProfile";
 
 const router = createBrowserRouter([
   {

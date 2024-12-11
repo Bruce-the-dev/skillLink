@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -10,6 +11,7 @@ const Login = () => {
   });
   const navigate = useNavigate();
   const [LoggedIn, setLoggedIn] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -17,6 +19,7 @@ const Login = () => {
       [name]: value,
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -27,7 +30,7 @@ const Login = () => {
         },
         body: JSON.stringify(formdata),
       });
-  
+
       if (!response.ok) {
         if (response.status === 401) {
           toast.error("Invalid password");
@@ -38,31 +41,34 @@ const Login = () => {
         }
         return;
       }
-  
+
       const data = await response.json();
       toast.success("User logged in successfully");
-  
+
+      // Save login details to cookies (for example, role and username)
+      Cookies.set("username", data.username);
+      Cookies.set("role", data.role);
+
       setFormData({
         username: "",
         password: "",
       });
       setLoggedIn(true);
-  
+
       // Redirect based on role
-      const role = data.role; 
-      const userId = data.userId;
+      const role = data.role;
       if (role === "TEACHER") {
-        navigate(`/Instructor/InstructorDashboard/${userId}`);
+        navigate(`/instructor`); // Static path for instructor
       } else if (role === "STUDENT") {
-        navigate(`/Student/LearnerDashboard/${userId}`);
+        navigate(`/student`); // Static path for student
       } else {
-        navigate(`/Signup/${userId}`); // Default redirection
+        navigate("/Signup"); // Default redirection
       }
+    // eslint-disable-next-line no-unused-vars
     } catch (e) {
       toast.error("An error occurred while connecting to the server.");
     }
   };
-  
 
   return (
     <div
