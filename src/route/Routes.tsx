@@ -13,6 +13,9 @@ import CourseBrowsingPage from "../pages/Student/CourseBrowsing";
 import CourseDetailPage from "../pages/Student/CourseDetail";
 import LearnerDashboard from "../pages/Student/LearnerDashboard";
 import UpdateProfile from "../pages/UpdateProfile";
+import CourseManagementPage from "../pages/Instructor/CourseMgt";
+import AssessmentCreation from "../pages/Instructor/AssessmentCreation";
+import AssessmentGradingPage from "../pages/Instructor/AssessmentGrade";
 
 const router = createBrowserRouter([
   {
@@ -84,8 +87,17 @@ const router = createBrowserRouter([
         element: <InstructorDashboard />,
       },
       {
-        path: "login",
-        element: <Login />,
+        path: "ViewCourses",
+        element: <CourseManagementPage />,
+      },
+
+      {
+        path: "CreateAssessment",
+        element: <AssessmentCreation />,
+      },
+      {
+        path: "Grading",
+        element: <AssessmentGradingPage />,
       },
     ],
   },

@@ -46,6 +46,7 @@ const Login = () => {
       toast.success("User logged in successfully");
 
       // Save login details to cookies (for example, role and username)
+      Cookies.set("id", data.userId);
       Cookies.set("username", data.username);
       Cookies.set("role", data.role);
 
@@ -64,7 +65,7 @@ const Login = () => {
       } else {
         navigate("/Signup"); // Default redirection
       }
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (e) {
       toast.error("An error occurred while connecting to the server.");
     }

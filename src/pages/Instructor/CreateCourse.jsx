@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import Header from "../Header";
+import { useCookies } from "react-cookie";
 
 function CreateCourse() {
   const [course, setCourse] = useState({
@@ -9,11 +10,16 @@ function CreateCourse() {
     category: "",
     price: "",
     level: "",
+    instructor: "",
   });
   const [categories, setCategories] = useState([]); // To store categories
+  const [instructors, setInstructors] = useState([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(true); // Loading state for instructors
   const [loadingCategories, setLoadingCategories] = useState(true); // Loading state for categories
   const [isLoading, setIsLoading] = useState(false); // Loading state for course creation
 
+  const [cookies] = useCookies(["id"]);
+  const instructorId = cookies.id; // Access the instructor ID from cookies
   // Fetch categories when the component is mounted
   useEffect(() => {
     const fetchCategories = async () => {
@@ -34,6 +40,39 @@ function CreateCourse() {
     };
 
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!instructorId) {
+      toast.error("Instructor ID is missing in cookies.");
+      console.log(instructorId);
+      setLoading(false);
+      return;
+    }
+  });
+  // Fetch instructor when the component is mounted
+  useEffect(() => {
+    const fetchInstructors = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/users/${instructorId}`,
+          {
+            method: "GET",
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch The instructor");
+        }
+        const instructorList = await response.json();
+        setInstructors(instructorList); // Store the categories in state
+      } catch (error) {
+        toast.error("Error fetching instructor: " + error.message);
+      } finally {
+        setLoadingInstructors(false);
+      }
+    };
+
+    fetchInstructors();
   }, []);
 
   // Handle input changes
@@ -59,6 +98,7 @@ function CreateCourse() {
       category: course.category, // Send the category ID instead of the name
       price: course.price,
       level: course.level,
+      instructor: instructorId, // Send the instructor ID instead of the name
     };
 
     setIsLoading(true); // Set the loading state for course creation
@@ -165,6 +205,14 @@ function CreateCourse() {
             onChange={handleInputChange}
             required
           />
+        </div>
+        <div>
+          <label>Instructor:</label>
+          {loadingInstructors ? (
+            <p>Loading instructors...</p>
+          ) : (
+            <p>{instructors.name}</p>
+          )}
         </div>
 
         <button type="submit" disabled={isLoading}>

@@ -20,22 +20,22 @@ function DashboardSidebar() {
           <ListItemText primary="Dashboard" />
         </ListItem>
         <ListItem button>
-          <ListItemText primary="Kanban" />
+          <ListItemText primary="/Course/add" />
         </ListItem>
         <ListItem button>
           <ListItemText primary="Inbox" />
         </ListItem>
         <ListItem button>
-          <ListItemText primary="Users" />
+          <ListItemText primary="Notifications" />
         </ListItem>
         <ListItem button>
-          <ListItemText primary="Products" />
+          <ListItemText primary="Achievements" />
         </ListItem>
         <ListItem button>
-          <ListItemText primary="Sign In" />
+          <ListItemText primary="Assignments" />
         </ListItem>
         <ListItem button>
-          <ListItemText primary="Sign Up" />
+          <ListItemText primary="Log Out" />
         </ListItem>
       </List>
     </Drawer>
