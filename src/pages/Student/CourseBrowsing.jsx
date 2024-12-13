@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Header";
+import { toast } from "react-toastify"; // Import react-toastify for notifications
 
 function CourseBrowsingPage() {
   const [courses, setCourses] = useState([]);
@@ -7,19 +8,36 @@ function CourseBrowsingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [filteredCourses, setFilteredCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data initialization (replace with API calls)
+  // Fetch data from the backend API
   useEffect(() => {
-    // Fetch courses
-    setCourses([
-      { id: 1, title: "React Basics", category: "Programming" },
-      { id: 2, title: "Introduction to Business", category: "Business" },
-      { id: 3, title: "Graphic Design Fundamentals", category: "Design" },
-      { id: 4, title: "Advanced Java", category: "Programming" },
-    ]);
+    const fetchCourses = async () => {
+      try {
+        const coursesResponse = await fetch(
+          "http://localhost:8080/api/courses"
+        );
+        if (!coursesResponse.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+        const coursesData = await coursesResponse.json();
+        setCourses(coursesData);
 
-    // Fetch categories
-    setCategories(["Programming", "Business", "Design"]);
+        // Filter categories from courses data (if you don't have a dedicated category endpoint)
+        const uniqueCategories = [
+          ...new Set(coursesData.map((course) => course.category)),
+        ];
+        setCategories(uniqueCategories);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        toast.error("Failed to load courses.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
   }, []);
 
   // Update filtered courses whenever search query or selected category changes
@@ -44,10 +62,41 @@ function CourseBrowsingPage() {
   }, [searchQuery, selectedCategory, courses]);
 
   // Handle enrolling in a course
-  const handleEnroll = (courseId) => {
-    alert(`You have enrolled in course ID: ${courseId}`);
-    // Add API call here to enroll the user in the course
+  const handleEnroll = async (courseId) => {
+    const learnerId = 1; // Assuming the learner's ID is available in your app (you can get it from cookies or auth context)
+
+    try {
+      // Send enrollment request to backend
+      const enrollResponse = await fetch(
+        `http://localhost:8080/api/courses/api/enrollments/enroll`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: learnerId, // Assuming learnerId is available (e.g., from cookies or context)
+            courseId: courseId,
+            enrollmentDate: new Date().toISOString(), // Send the current date as the enrollment date
+          }),
+        }
+      );
+
+      if (!enrollResponse.ok) {
+        throw new Error("Failed to enroll in the course");
+      }
+
+      const enrollData = await enrollResponse.json();
+      toast.success("You have successfully enrolled in the course!");
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      toast.error("Failed to enroll in the course.");
+    }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const InstructorDashboard = () => {
+  const navigate = useNavigate();
   // Mock data for courses
   const [courses, setCourses] = useState([
     { id: 1, title: "React Basics", status: "Published", enrollments: 30 },
@@ -68,7 +70,10 @@ const InstructorDashboard = () => {
       <section>
         <h2>Quick Links</h2>
         <button
-          onClick={() => alert("Navigate to Create Course page")}
+          onClick={() => {
+            alert("Navigate to Create Course page");
+            navigate("/Course/add");
+          }}
           style={{
             marginRight: "10px",
             padding: "10px 15px",
@@ -78,7 +83,10 @@ const InstructorDashboard = () => {
           Create New Course
         </button>
         <button
-          onClick={() => alert("Navigate to Create Assessment page")}
+          onClick={() => {
+            alert("Navigate to Create Assessment page");
+            navigate("/instructor/CreateAssessment");
+          }}
           style={{ padding: "10px 15px", cursor: "pointer" }}
         >
           Create New Assessment

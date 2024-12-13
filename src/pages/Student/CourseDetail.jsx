@@ -1,53 +1,72 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // For dynamic routing
 import Header from "../Header";
+import { toast, ToastContainer } from "react-toastify"; // Importing react-toastify for notifications
 
 function CourseDetailPage() {
   const { courseId } = useParams(); // Assuming courseId is passed via the route
   const [course, setCourse] = useState(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
 
-  // Mock Data Initialization (replace with API calls)
   useEffect(() => {
     // Fetch course details
     const fetchCourseDetails = async () => {
-      // Mock API response
-      const mockCourse = {
-        id: courseId,
-        title: "React Basics",
-        description:
-          "Learn the fundamentals of React, including components, state, and props.",
-        category: "Programming",
-        content: [
-          {
-            id: 1,
-            type: "video",
-            title: "Introduction to React",
-            link: "https://example.com/video1",
-          },
-          {
-            id: 2,
-            type: "document",
-            title: "React Cheatsheet",
-            link: "https://example.com/doc1",
-          },
-        ],
-      };
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}`
+        );
 
-      setCourse(mockCourse);
+        if (!response.ok) {
+          throw new Error("Failed to fetch course details");
+        }
 
-      // Mock enrollment status
-      setIsEnrolled(courseId === "1"); // Assume user is enrolled in course 1
+        const courseData = await response.json();
+        // Transform the data if needed (e.g., category, instructor details)
+
+        const transformedCourse = {
+          id: courseData.id,
+          title: courseData.title,
+          description: courseData.description,
+          price: courseData.price,
+          level: courseData.level,
+          category: courseData.category?.name, // Assuming category has a 'name' property
+          instructor: courseData.instructor?.name, // Assuming instructor has a 'name' property
+          content: courseData.content, // Assuming the content is fetched as part of the course data
+        };
+
+        setCourse(transformedCourse);
+      } catch (error) {
+        console.error("Error fetching course details:", error);
+        toast.error("Failed to load course details.");
+      }
     };
 
     fetchCourseDetails();
   }, [courseId]);
 
-  const handleEnroll = () => {
-    alert("You have enrolled in this course!");
-    setIsEnrolled(true);
+  const handleEnroll = async () => {
+    try {
+      // Simulate an enrollment process
+      const response = await fetch(
+        `http://localhost:8080/api/courses/${courseId}/enroll`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    // Add API call to enroll in the course here
+      if (!response.ok) {
+        throw new Error("Failed to enroll in the course");
+      }
+
+      setIsEnrolled(true);
+      toast.success("You have successfully enrolled in this course!");
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      toast.error("Enrollment failed. Please try again.");
+    }
   };
 
   if (!course) {
@@ -56,11 +75,18 @@ function CourseDetailPage() {
 
   return (
     <>
+      <ToastContainer />
       <Header />
       <div style={styles.page}>
         <h1>{course.title}</h1>
         <p>
           <strong>Category:</strong> {course.category}
+        </p>
+        <p>
+          <strong>Level:</strong> {course.level}
+        </p>
+        <p>
+          <strong>Instructor:</strong> {course.instructor}
         </p>
         <p>{course.description}</p>
 

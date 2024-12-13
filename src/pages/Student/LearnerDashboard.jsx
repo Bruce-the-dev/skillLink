@@ -1,40 +1,86 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Header";
-import DashboardSidebar from "../../Universal/Dashboard";
+import { toast } from "react-toastify"; // Import react-toastify for notifications
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 function LearnerDashboard() {
   const [courses, setCourses] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [achievements, setAchievements] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data for demo purposes
+  const [cookies] = useCookies(["id"]);
+  const learnerId = cookies.id; // Access the learner ID from cookies
+  const navigate = useNavigate(); // Initialize the navigation function
+
   useEffect(() => {
-    // Fetch enrolled courses
-    setCourses([
-      { id: 1, title: "React Basics", progress: 75 },
-      { id: 2, title: "Spring Boot Essentials", progress: 50 },
-    ]);
+    if (!learnerId) {
+      toast.error("Learner's ID is missing in cookies.");
+      console.log("No learner ID found.");
+      setIsLoading(false); // Stop loading when ID is missing
+      return;
+    }
+  }, [learnerId]);
 
-    // Fetch notifications
-    setNotifications([
-      { id: 1, message: "New assignment available for React Basics" },
-      {
-        id: 2,
-        message:
-          "Course update: Additional resources added to Spring Boot Essentials",
-      },
-    ]);
+  useEffect(() => {
+    if (learnerId) {
+      console.log(learnerId);
+      const fetchDashboardData = async () => {
+        setIsLoading(true);
+        try {
+          // Fetch Enrolled Courses
+          const coursesResponse = await fetch(
+            `http://localhost:8080/api/courses/instructor/${learnerId}`
+          );
+          if (!coursesResponse.ok) {
+            throw new Error("Failed to fetch enrolled courses");
+          }
+          const coursesData = await coursesResponse.json();
+          setCourses(coursesData);
 
-    // Fetch achievements
-    setAchievements([
-      { id: 1, title: "React Basics Completion", badge: "🏆" },
-      { id: 2, title: "Top Scorer in Spring Boot", badge: "🥇" },
-    ]);
-  }, []);
+          // Fetch Notifications
+          const notificationsResponse = await fetch(
+            `http://localhost:8080/api/notifications/getUserNotifications/${learnerId}`
+          );
+          if (!notificationsResponse.ok) {
+            throw new Error("Failed to fetch notifications");
+          }
+          const notificationsData = await notificationsResponse.json();
+          setNotifications(notificationsData);
+
+          // Fetch Achievements
+          const achievementsResponse = await fetch(
+            `http://localhost:8080/api/achievements/user/${learnerId}`
+          );
+          if (!achievementsResponse.ok) {
+            throw new Error("Failed to fetch achievements");
+          }
+          const achievementsData = await achievementsResponse.json();
+          setAchievements(achievementsData);
+        } catch (error) {
+          console.error("Error fetching dashboard data:", error);
+          toast.error("Failed to load dashboard data.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchDashboardData();
+    }
+  }, [learnerId]);
+
+  // Navigate to the "Browse Courses" page
+  const handleBrowseCourses = () => {
+    navigate("/student/browsing"); // Change this to the correct path for browsing courses
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
-      <DashboardSidebar />
       <nav>
         <Header />
       </nav>
@@ -89,7 +135,7 @@ function LearnerDashboard() {
             <ul style={styles.list}>
               {achievements.map((achievement) => (
                 <li key={achievement.id} style={styles.card}>
-                  <span style={styles.badge}>{achievement.badge}</span>{" "}
+                  <span style={styles.badge}>{achievement.badge}</span>
                   {achievement.title}
                 </li>
               ))}
@@ -97,6 +143,13 @@ function LearnerDashboard() {
           ) : (
             <p>No achievements yet.</p>
           )}
+        </section>
+
+        {/* Browse Courses Button */}
+        <section style={styles.section}>
+          <button onClick={handleBrowseCourses} style={styles.browseButton}>
+            Browse Available Courses
+          </button>
         </section>
       </div>
     </>
@@ -142,6 +195,15 @@ const styles = {
   badge: {
     fontSize: "1.5rem",
     marginRight: "10px",
+  },
+  browseButton: {
+    padding: "10px 20px",
+    fontSize: "16px",
+    backgroundColor: "#007bff", // Bootstrap primary color
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
 };
 
