@@ -1,56 +1,64 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { toast, ToastContainer } from "react-toastify";
 
 function AchievementsPage() {
   const [achievements, setAchievements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [cookies] = useCookies(["id"]); // Getting user ID from cookies
 
   useEffect(() => {
-    // Fetch achievements data from API or use mock data
     const fetchAchievements = async () => {
-      // Replace with actual API call
-      const mockData = [
-        {
-          id: 1,
-          type: "Badge",
-          title: "React Beginner",
-          description: "Completed the React for Beginners course.",
-          dateAwarded: "2024-01-15",
-        },
-        {
-          id: 2,
-          type: "Certificate",
-          title: "Advanced JavaScript",
-          description: "Passed the Advanced JavaScript certification exam.",
-          dateAwarded: "2024-03-22",
-        },
-        {
-          id: 3,
-          type: "Milestone",
-          title: "100 Hours of Learning",
-          description: "Achieved 100 hours of learning on the platform.",
-          dateAwarded: "2024-05-10",
-        },
-      ];
-      setAchievements(mockData);
+      try {
+        const userId = cookies.id; // Get user ID from cookies
+
+        if (!userId) {
+          toast.error("User ID is not available in cookies.");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          `http://localhost:8080/api/achievements/user/${userId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch achievements");
+        }
+
+        const data = await response.json(); // Parse the response as JSON
+        setAchievements(data);
+        setLoading(false);
+      } catch (err) {
+        toast.error("Error fetching achievements: " + err.message);
+        setError(err);
+        setLoading(false);
+      }
     };
 
     fetchAchievements();
-  }, []);
+  }, [cookies.id]); // Dependency on cookies.id to refetch if it changes
 
   return (
     <div style={styles.container}>
+      <ToastContainer />
       <h1 style={styles.header}>Achievements</h1>
-      {achievements.length > 0 ? (
+      {loading ? (
+        <p style={styles.noAchievements}>Loading achievements...</p>
+      ) : error ? (
+        <p style={styles.noAchievements}>Error: {error.message}</p>
+      ) : achievements.length > 0 ? (
         <div style={styles.achievementsList}>
           {achievements.map((achievement) => (
             <div key={achievement.id} style={styles.achievementCard}>
-              <h2 style={styles.achievementTitle}>{achievement.title}</h2>
-              <p style={styles.achievementType}>{achievement.type}</p>
-              <p style={styles.achievementDescription}>
-                {achievement.description}
+              <h2 style={styles.achievementTitle}>{achievement.badge}</h2>
+              <p style={styles.achievementPoints}>
+                Points: {achievement.points}
               </p>
               <p style={styles.achievementDate}>
                 Awarded on:{" "}
-                {new Date(achievement.dateAwarded).toLocaleDateString()}
+                {new Date(achievement.dateEarned).toLocaleDateString()}
               </p>
             </div>
           ))}
@@ -85,12 +93,9 @@ const styles = {
   achievementTitle: {
     margin: "0 0 10px 0",
   },
-  achievementType: {
+  achievementPoints: {
     fontStyle: "italic",
     color: "#555",
-  },
-  achievementDescription: {
-    margin: "10px 0",
   },
   achievementDate: {
     color: "#888",

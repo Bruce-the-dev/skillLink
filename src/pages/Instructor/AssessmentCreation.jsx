@@ -1,52 +1,72 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+
+// Initialize React-Toastify
 
 const AssessmentCreation = () => {
-  // Mock data for assessments
-  const [assessments, setAssessments] = useState([
-    { id: 1, title: "Quiz 1", course: "React Basics", deadline: "2024-12-15" },
-    {
-      id: 2,
-      title: "Final Project",
-      course: "Spring Boot Essentials",
-      deadline: "2024-12-20",
-    },
-  ]);
-
   // Form state
   const [newAssessment, setNewAssessment] = useState({
-    title: "",
     course: "",
-    deadline: "",
+    // deadline: "",
+    type: "", // Quiz, Project, Peer Review
+    maxScore: "",
   });
-
+  const navigate = useNavigate();
   // Handle form submission
-  const handleCreateAssessment = (e) => {
+  const handleCreateAssessment = async (e) => {
     e.preventDefault();
-    setAssessments([
-      ...assessments,
-      { ...newAssessment, id: assessments.length + 1 },
-    ]);
-    setNewAssessment({ title: "", course: "", deadline: "" });
+
+    // Prepare data to be sent to backend
+    const assessmentData = {
+      course: newAssessment.course,
+      // deadline: newAssessment.deadline,
+      type: newAssessment.type,
+      maxScore: newAssessment.maxScore,
+    };
+
+    try {
+      // Send POST request to backend
+      const response = await fetch(
+        "http://localhost:8080/api/assessments/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(assessmentData),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // If the request was successful, show success toast
+        toast.success("Assessment created successfully!");
+        // Reset form after successful submission
+        setNewAssessment({
+          course: "",
+          // deadline: "",
+          type: "",
+          maxScore: "",
+        });
+        navigate("/instructor");
+      } else {
+        // If the request failed, show error toast
+        toast.error("Failed to create assessment. Please try again.");
+      }
+    } catch (error) {
+      // Handle network errors or other issues
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
+      <ToastContainer />
       <h1>Assessment Creation</h1>
 
       {/* Form for creating a new assessment */}
       <form onSubmit={handleCreateAssessment} style={{ marginBottom: "20px" }}>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Assessment Title: </label>
-          <input
-            type="text"
-            value={newAssessment.title}
-            onChange={(e) =>
-              setNewAssessment({ ...newAssessment, title: e.target.value })
-            }
-            required
-            style={{ marginLeft: "10px" }}
-          />
-        </div>
         <div style={{ marginBottom: "10px" }}>
           <label>Course: </label>
           <input
@@ -55,6 +75,18 @@ const AssessmentCreation = () => {
             onChange={(e) =>
               setNewAssessment({ ...newAssessment, course: e.target.value })
             }
+            required
+            style={{ marginLeft: "10px" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>Assessment Title: </label>
+          <input
+            type="text"
+            // value={newAssessment.title}
+            // onChange={(e) =>
+            //   setNewAssessment({ ...newAssessment, title: e.target.value })
+            // }
             required
             style={{ marginLeft: "10px" }}
           />
@@ -71,6 +103,34 @@ const AssessmentCreation = () => {
             style={{ marginLeft: "10px" }}
           />
         </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>Type: </label>
+          <select
+            value={newAssessment.type}
+            onChange={(e) =>
+              setNewAssessment({ ...newAssessment, type: e.target.value })
+            }
+            required
+            style={{ marginLeft: "10px" }}
+          >
+            <option value="">Select Type</option>
+            <option value="Quiz">Quiz</option>
+            <option value="Project">Project</option>
+            <option value="Peer Review">Peer Review</option>
+          </select>
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label>Max Score: </label>
+          <input
+            type="number"
+            value={newAssessment.maxScore}
+            onChange={(e) =>
+              setNewAssessment({ ...newAssessment, maxScore: e.target.value })
+            }
+            required
+            style={{ marginLeft: "10px" }}
+          />
+        </div>
         <button
           type="submit"
           style={{ padding: "10px 15px", cursor: "pointer" }}
@@ -78,36 +138,6 @@ const AssessmentCreation = () => {
           Create Assessment
         </button>
       </form>
-
-      {/* List of existing assessments */}
-      <section>
-        <h2>Existing Assessments</h2>
-        <table
-          border="1"
-          style={{
-            width: "100%",
-            textAlign: "left",
-            borderCollapse: "collapse",
-          }}
-        >
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Course</th>
-              <th>Deadline</th>
-            </tr>
-          </thead>
-          <tbody>
-            {assessments.map((assessment) => (
-              <tr key={assessment.id}>
-                <td>{assessment.title}</td>
-                <td>{assessment.course}</td>
-                <td>{assessment.deadline}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
     </div>
   );
 };

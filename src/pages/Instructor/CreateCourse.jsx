@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import Header from "../Header";
 import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 function CreateCourse() {
   const [course, setCourse] = useState({
@@ -17,6 +18,7 @@ function CreateCourse() {
   const [loadingInstructors, setLoadingInstructors] = useState(true); // Loading state for instructors
   const [loadingCategories, setLoadingCategories] = useState(true); // Loading state for categories
   const [isLoading, setIsLoading] = useState(false); // Loading state for course creation
+  const navigate = useNavigate();
 
   const [cookies] = useCookies(["id"]);
   const instructorId = cookies.id; // Access the instructor ID from cookies
@@ -46,7 +48,7 @@ function CreateCourse() {
     if (!instructorId) {
       toast.error("Instructor ID is missing in cookies.");
       console.log(instructorId);
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
   });
@@ -121,6 +123,9 @@ function CreateCourse() {
 
       const createdCourse = await response.json();
       console.log("Course created successfully:", createdCourse);
+      setTimeout(() => {
+        navigate("/instructor"); // Redirect to instructor courses page after successful course creation
+      });
 
       // Reset form upon success
       setCourse({
