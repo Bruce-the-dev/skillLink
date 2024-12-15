@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Header";
-import { toast } from "react-toastify"; // Import react-toastify for notifications
+import { toast } from "react-toastify";
 
 function CourseBrowsingPage() {
   const [courses, setCourses] = useState([]);
@@ -23,9 +23,13 @@ function CourseBrowsingPage() {
         const coursesData = await coursesResponse.json();
         setCourses(coursesData);
 
-        // Filter categories from courses data (if you don't have a dedicated category endpoint)
+        // Extract unique categories from the courses
         const uniqueCategories = [
-          ...new Set(coursesData.map((course) => course.category)),
+          ...new Set(
+            coursesData
+              .filter((course) => course.category && course.category.name)
+              .map((course) => course.category.name)
+          ),
         ];
         setCategories(uniqueCategories);
 
@@ -47,37 +51,46 @@ function CourseBrowsingPage() {
     // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(
-        (course) => course.category === selectedCategory
+        (course) =>
+          course.category &&
+          course.category.name &&
+          course.category.name === selectedCategory
       );
     }
 
     // Filter by search query
     if (searchQuery) {
-      filtered = filtered.filter((course) =>
-        course.title.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (course) =>
+          course.title &&
+          course.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
+    // Remove courses with null values for title or category
+    filtered = filtered.filter(
+      (course) => course.title !== null && course.category !== null
+    );
 
     setFilteredCourses(filtered);
   }, [searchQuery, selectedCategory, courses]);
 
   // Handle enrolling in a course
   const handleEnroll = async (courseId) => {
-    const learnerId = 1; // Assuming the learner's ID is available in your app (you can get it from cookies or auth context)
+    const learnerId = 1; // Assuming the learner's ID is known
 
     try {
-      // Send enrollment request to backend
       const enrollResponse = await fetch(
-        `http://localhost:8080/api/courses/api/enrollments/enroll`,
+        `http://localhost:8080/api/enrollments/enroll`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: learnerId, // Assuming learnerId is available (e.g., from cookies or context)
-            courseId: courseId,
-            enrollmentDate: new Date().toISOString(), // Send the current date as the enrollment date
+            user: { userId: learnerId },
+            course: { courseId: courseId },
+            enrollmentDate: new Date().toISOString(),
           }),
         }
       );
@@ -86,7 +99,7 @@ function CourseBrowsingPage() {
         throw new Error("Failed to enroll in the course");
       }
 
-      const enrollData = await enrollResponse.json();
+      await enrollResponse.json();
       toast.success("You have successfully enrolled in the course!");
     } catch (error) {
       console.error("Error enrolling in course:", error);
@@ -137,12 +150,14 @@ function CourseBrowsingPage() {
         <section style={styles.courseList}>
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
-              <div key={course.id} style={styles.courseCard}>
+              <div key={course.courseId} style={styles.courseCard}>
                 <h3>{course.title}</h3>
-                <p>Category: {course.category}</p>
+                <p>
+                  Category: {course.category ? course.category.name : "N/A"}
+                </p>
                 <button
                   style={styles.button}
-                  onClick={() => handleEnroll(course.id)}
+                  onClick={() => handleEnroll(course.courseId)}
                 >
                   Enroll
                 </button>

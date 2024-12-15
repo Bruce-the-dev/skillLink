@@ -31,7 +31,7 @@ function LearnerDashboard() {
         try {
           // Fetch Enrolled Courses
           const coursesResponse = await fetch(
-            `http://localhost:8080/api/courses/instructor/${learnerId}`
+            `http://localhost:8080/api/enrollments/user/${learnerId}`
           );
           if (!coursesResponse.ok) {
             throw new Error("Failed to fetch enrolled courses");
@@ -72,7 +72,7 @@ function LearnerDashboard() {
 
   // Navigate to the "Browse Courses" page
   const handleBrowseCourses = () => {
-    navigate("/student/browsing"); // Change this to the correct path for browsing courses
+    navigate("/student/Browsing"); // Change this to the correct path for browsing courses
   };
 
   if (isLoading) {
@@ -93,9 +93,10 @@ function LearnerDashboard() {
           {courses.length > 0 ? (
             <ul style={styles.list}>
               {courses.map((course) => (
-                <li key={course.id} style={styles.card}>
-                  <h3>{course.title}</h3>
-                  <p>Progress: {course.progress}%</p>
+                <li key={course.enrollmentId} style={styles.card}>
+                  <h3>Course name:{course.course.title}</h3>
+                  {/* <p>Progress: {course.progress}%</p> */}
+                  <p>Enrollment Date: {course.enrollmentDate}</p>
                   <div style={styles.progressBar}>
                     <div
                       style={{
@@ -118,7 +119,7 @@ function LearnerDashboard() {
           {notifications.length > 0 ? (
             <ul style={styles.list}>
               {notifications.map((notification) => (
-                <li key={notification.id} style={styles.card}>
+                <li key={notification.notificationId} style={styles.card}>
                   {notification.message}
                 </li>
               ))}
@@ -134,9 +135,10 @@ function LearnerDashboard() {
           {achievements.length > 0 ? (
             <ul style={styles.list}>
               {achievements.map((achievement) => (
-                <li key={achievement.id} style={styles.card}>
+                <li key={achievement.achievementId} style={styles.card}>
                   <span style={styles.badge}>{achievement.badge}</span>
-                  {achievement.title}
+                  {achievement.badge}
+                  {achievement.points}
                 </li>
               ))}
             </ul>
