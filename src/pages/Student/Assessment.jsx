@@ -16,7 +16,7 @@ function AssessmentSubmissionPage() {
     const fetchAssessments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/assessments//course/${courseId}`
+          `http://localhost:8080/api/assessments/course/${courseId}`
         );
 
         if (!response.ok) {

@@ -15,6 +15,8 @@ function LearnerDashboard() {
   const learnerId = cookies.id; // Access the learner ID from cookies
   const navigate = useNavigate(); // Initialize the navigation function
 
+  const [results, setResults] = useState(null);
+
   useEffect(() => {
     if (!learnerId) {
       toast.error("Learner's ID is missing in cookies.");
@@ -42,7 +44,7 @@ function LearnerDashboard() {
 
           // Fetch Notifications
           const notificationsResponse = await fetch(
-            `http://localhost:8080/api/notifications/getUserNotifications/${learnerId}`
+            `http://localhost:8080/api/notifications/getUnreadNotifications/${learnerId}`
           );
           if (!notificationsResponse.ok) {
             throw new Error("Failed to fetch notifications");
@@ -79,6 +81,44 @@ function LearnerDashboard() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+  const UpdateNotification = async (notificationId) => {
+    if (!notificationId) {
+      toast.error("Notification ID not found.");
+      console.error("Invalid notificationId:", notificationId);
+      return;
+    }
+
+    const notificationPayload = {
+      notificationId: notificationId,
+      status: "Read",
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/notifications/updateStatus/${notificationId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(notificationPayload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update notification");
+      }
+
+      // Refresh the notifications list after a successful update
+      const updatedNotifications = notifications.filter(
+        (notif) => notif.notificationId !== notificationId
+      );
+      setNotifications(updatedNotifications);
+
+      toast.success("Notification marked as read!");
+    } catch (error) {
+      console.error("Error updating notification:", error);
+      toast.error("Failed to update notification. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -120,12 +160,20 @@ function LearnerDashboard() {
 
         {/* Notifications Section */}
         <section style={styles.section}>
-          <h2>Notifications</h2>
+          <h2>New Notifications</h2>
           {notifications.length > 0 ? (
             <ul style={styles.list}>
               {notifications.map((notification) => (
                 <li key={notification.notificationId} style={styles.card}>
-                  {notification.message}
+                  <p>{notification.message}</p>
+                  <button
+                    style={styles.viewButton}
+                    onClick={() =>
+                      UpdateNotification(notification.notificationId)
+                    }
+                  >
+                    Mark as Read
+                  </button>
                 </li>
               ))}
             </ul>

@@ -2,34 +2,33 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../Header";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Ensure you have the CSS for react-toastify
+import "react-toastify/dist/ReactToastify.css";
 import { useCookies } from "react-cookie";
 
 function CourseDetailPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-
   const [course, setCourse] = useState(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [enrollmentId, setEnrollmentId] = useState(null); // State for enrollmentId
+  const [enrollmentId, setEnrollmentId] = useState(null);
+  const [loading, setLoading] = useState(true); // Loading state
   const [cookies] = useCookies(["id"]);
-  const learnerId = cookies.id; // Access the learner ID from cookies
+  const learnerId = cookies.id;
 
   useEffect(() => {
-    // Fetch course details
-    const fetchCourseDetails = async () => {
+    const fetchData = async () => {
+      setLoading(true); // Set loading to true at the start
       try {
-        const response = await fetch(
+        // Fetch course details
+        const courseResponse = await fetch(
           `http://localhost:8080/api/courses/${courseId}`
         );
 
-        if (!response.ok) {
+        if (!courseResponse.ok) {
           throw new Error("Failed to fetch course details");
         }
 
-        const courseData = await response.json();
-
-        // Transform the data if needed
+        const courseData = await courseResponse.json();
         const transformedCourse = {
           id: courseData.courseId,
           title: courseData.title,
@@ -38,35 +37,20 @@ function CourseDetailPage() {
           level: courseData.level,
           category: courseData.category?.name,
           instructor: courseData.instructor?.name,
-          // Assuming content is returned as an array, adjust if needed
           content: courseData.content,
         };
-
         setCourse(transformedCourse);
-      } catch (error) {
-        console.error("Error fetching course details:", error);
-        toast.error("Failed to load course details.");
-      }
-    };
 
-    fetchCourseDetails();
-  }, [courseId]);
-
-  useEffect(() => {
-    // Check if user is enrolled in this course
-    const checkEnrollmentStatus = async () => {
-      try {
-        const response = await fetch(
+        // Check enrollment status
+        const enrollmentResponse = await fetch(
           `http://localhost:8080/api/enrollments/user/${learnerId}`
         );
 
-        if (!response.ok) {
+        if (!enrollmentResponse.ok) {
           throw new Error("Failed to fetch enrollments");
         }
 
-        const enrollments = await response.json();
-
-        // Assuming enrollments is an array of enrollment objects
+        const enrollments = await enrollmentResponse.json();
         const enrollment = enrollments.find(
           (enroll) => enroll.course.courseId === parseInt(courseId, 10)
         );
@@ -79,11 +63,14 @@ function CourseDetailPage() {
           setEnrollmentId(null);
         }
       } catch (error) {
-        console.error("Error checking enrollment status:", error);
+        console.error("Error loading data:", error);
+        toast.error("Failed to load data. Please try again later.");
+      } finally {
+        setLoading(false); // Set loading to false at the end
       }
     };
 
-    checkEnrollmentStatus();
+    fetchData();
   }, [courseId, learnerId]);
 
   const handleEnroll = async () => {
@@ -109,11 +96,44 @@ function CourseDetailPage() {
 
       const enrollData = await response.json();
       setIsEnrolled(true);
-      setEnrollmentId(enrollData.enrollmentId); // Assuming the backend returns the enrollmentId
+      setEnrollmentId(enrollData.enrollmentId);
       toast.success("You have successfully enrolled in this course!");
+
+      // Send a notification after successful enrollment
+      await sendEnrollmentNotification();
     } catch (error) {
       console.error("Error enrolling in course:", error);
       toast.error("Enrollment failed. Please try again.");
+    }
+  };
+
+  const sendEnrollmentNotification = async () => {
+    try {
+      const notificationPayload = {
+        user: { userId: learnerId },
+        message: `You have successfully enrolled in the course: ${course?.title}`,
+        status: "Unread",
+      };
+
+      const notificationResponse = await fetch(
+        `http://localhost:8080/api/notifications/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(notificationPayload),
+        }
+      );
+
+      if (!notificationResponse.ok) {
+        throw new Error("Failed to create notification");
+      }
+
+      toast.success("Notification created successfully!");
+    } catch (error) {
+      console.error("Error creating notification:", error);
+      toast.error("Failed to create notification.");
     }
   };
 
@@ -146,8 +166,26 @@ function CourseDetailPage() {
     navigate(`/student/assessment/${courseId}`);
   };
 
+  if (loading) {
+    return (
+      <div>
+        <Header />
+        <div style={styles.page}>
+          <p>Loading course details...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!course) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Header />
+        <div style={styles.page}>
+          <p>Course details could not be loaded.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -167,7 +205,6 @@ function CourseDetailPage() {
         </p>
         <p>{course.description || "No description available."}</p>
 
-        {/* Enrollment / Drop Out / Assignments Buttons */}
         {!isEnrolled && (
           <button style={styles.button} onClick={handleEnroll}>
             Enroll in this Course
@@ -184,7 +221,6 @@ function CourseDetailPage() {
           </div>
         )}
 
-        {/* Course Content if Enrolled */}
         {isEnrolled && (
           <section style={styles.contentSection}>
             <h2>Course Content</h2>

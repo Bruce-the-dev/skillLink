@@ -16,6 +16,7 @@ import UpdateProfile from "../pages/UpdateProfile";
 import CourseManagementPage from "../pages/Instructor/CourseMgt";
 import AssessmentCreation from "../pages/Instructor/AssessmentCreation";
 import AssessmentGradingPage from "../pages/Instructor/AssessmentGrade";
+import Dashboard from "../Universal/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "profile/:userId",
         element: <UpdateProfile />,
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />,
       },
     ],
   },
