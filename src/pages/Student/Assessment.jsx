@@ -1,131 +1,170 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AssessmentSubmissionPage() {
   const [assessments, setAssessments] = useState([]);
-  const [feedback, setFeedback] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState({});
+  const { courseId } = useParams();
+  const userId = 42; // Replace with actual user ID logic
 
-  // Mock Data Initialization (replace with API calls)
+  // Fetch assessments from the backend
   useEffect(() => {
-    // Fetch assessments
     const fetchAssessments = async () => {
-      // Mock API response
-      const mockAssessments = [
-        {
-          id: 1,
-          course: "React Basics",
-          title: "Project: Build a Todo App",
-          description: "Create a fully functional todo app using React.",
-          submissionType: "file", // file or text
-          isGraded: true,
-          feedback: "Great work! Score: 85/100",
-        },
-        {
-          id: 2,
-          course: "React Basics",
-          title: "Quiz: React Components",
-          description: "Answer the following multiple-choice questions.",
-          submissionType: "text",
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/assessments//course/${courseId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch assessments.");
+        }
+
+        const data = await response.json();
+
+        // Transform data for frontend usage
+        const transformedAssessments = data.map((assessment) => ({
+          id: assessment.assessmentId,
+          course: assessment.course.title,
+          title: `${assessment.type}: Assessment ${assessment.assessmentId}`,
+          description: `This is a ${assessment.type.toLowerCase()} assessment.`,
+          submissionType: assessment.type === "Project" ? "file" : "text",
           isGraded: false,
           feedback: null,
-        },
-      ];
+        }));
 
-      setAssessments(mockAssessments);
+        setAssessments(transformedAssessments);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching assessments:", err);
+        setError(err.message);
+        setLoading(false);
+      }
     };
 
     fetchAssessments();
-  }, []);
+  }, [courseId]);
 
-  // Handle file submission
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+  // Handle file selection
+  const handleFileChange = (e, assessmentId) => {
+    setSelectedFile((prevState) => ({
+      ...prevState,
+      [assessmentId]: e.target.files[0],
+    }));
   };
 
-  const handleFileSubmit = (assessmentId) => {
-    if (selectedFile) {
-      alert(`File submitted for assessment ID: ${assessmentId}`);
-      setSelectedFile(null);
-      // Add API call for file submission here
-    } else {
-      alert("Please select a file before submitting.");
+  // Handle file submission
+  const handleFileSubmit = async (assessmentId) => {
+    const file = selectedFile[assessmentId];
+    if (!file) {
+      toast.error("Please select a file before submitting.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "submission",
+      JSON.stringify({
+        assessment: { assessmentId },
+        user: { userId },
+        submissionDate: new Date().toISOString(),
+      })
+    );
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/assessment-submissions/create`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("File submission failed.");
+      }
+
+      toast.success("File submitted successfully!");
+      setSelectedFile((prevState) => ({
+        ...prevState,
+        [assessmentId]: null,
+      }));
+    } catch (err) {
+      console.error("Error submitting file:", err);
+      toast.error("File submission failed.");
     }
   };
 
-  // Handle text submission
-  const handleTextSubmit = (assessmentId, textValue) => {
-    alert(`Text submitted for assessment ID: ${assessmentId}:\n${textValue}`);
-    // Add API call for text submission here
-  };
+  if (loading) {
+    return <div>Loading assessments...</div>;
+  }
+
+  if (error) {
+    return <div style={styles.error}>Error: {error}</div>;
+  }
 
   return (
     <div style={styles.page}>
+      <ToastContainer />
       <h1>Assessment Submissions</h1>
-
       {assessments.length > 0 ? (
-        <div>
-          {assessments.map((assessment) => (
-            <div key={assessment.id} style={styles.assessmentCard}>
-              <h3>{assessment.title}</h3>
-              <p>
-                <strong>Course:</strong> {assessment.course}
+        assessments.map((assessment) => (
+          <div key={assessment.id} style={styles.assessmentCard}>
+            <h3>{assessment.title}</h3>
+            <p>
+              <strong>Course:</strong> {assessment.course}
+            </p>
+            <p>{assessment.description}</p>
+
+            {/* Feedback Section */}
+            {assessment.isGraded ? (
+              <p style={styles.feedback}>
+                <strong>Feedback:</strong> {assessment.feedback}
               </p>
-              <p>{assessment.description}</p>
+            ) : (
+              <p style={styles.pending}>Feedback Pending</p>
+            )}
 
-              {/* Feedback Section */}
-              {assessment.isGraded ? (
-                <p style={styles.feedback}>
-                  <strong>Feedback:</strong> {assessment.feedback}
-                </p>
-              ) : (
-                <p style={styles.pending}>Feedback Pending</p>
-              )}
-
-              {/* Submission Options */}
-              {!assessment.isGraded && (
-                <div style={styles.submissionSection}>
-                  {assessment.submissionType === "file" ? (
-                    <div>
-                      <input
-                        type="file"
-                        onChange={handleFileChange}
-                        style={styles.fileInput}
-                      />
-                      <button
-                        style={styles.submitButton}
-                        onClick={() => handleFileSubmit(assessment.id)}
-                      >
-                        Submit File
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <textarea
-                        placeholder="Enter your answer here..."
-                        rows="4"
-                        cols="50"
-                        style={styles.textArea}
-                        onBlur={(e) =>
-                          handleTextSubmit(assessment.id, e.target.value)
-                        }
-                      ></textarea>
-                      <button
-                        style={styles.submitButton}
-                        onClick={() =>
-                          alert(
-                            "Please click outside the text area to submit the text."
-                          )
-                        }
-                      >
-                        Submit Text
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            {/* Submission Options */}
+            {!assessment.isGraded && (
+              <div style={styles.submissionSection}>
+                {assessment.submissionType === "file" ? (
+                  <div>
+                    <input
+                      type="file"
+                      onChange={(e) => handleFileChange(e, assessment.id)}
+                      style={styles.fileInput}
+                    />
+                    <button
+                      style={styles.submitButton}
+                      onClick={() => handleFileSubmit(assessment.id)}
+                    >
+                      Submit File
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <textarea
+                      placeholder="Enter your answer here..."
+                      rows="4"
+                      cols="50"
+                      style={styles.textArea}
+                      onBlur={(e) =>
+                        toast.info(
+                          "Text submission for assessments is not yet implemented."
+                        )
+                      }
+                    ></textarea>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))
       ) : (
         <p>No assessments available.</p>
       )}
@@ -170,14 +209,6 @@ const styles = {
   fileInput: {
     marginBottom: "10px",
   },
-  textArea: {
-    width: "100%",
-    padding: "10px",
-    fontSize: "14px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    marginBottom: "10px",
-  },
   submitButton: {
     padding: "10px 20px",
     fontSize: "16px",
@@ -186,6 +217,10 @@ const styles = {
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
+  },
+  error: {
+    color: "red",
+    fontWeight: "bold",
   },
 };
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Header";
-import { toast } from "react-toastify"; // Import react-toastify for notifications
+import { toast, ToastContainer } from "react-toastify"; // Import react-toastify for notifications
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link } from "react-router-dom";
 
 function LearnerDashboard() {
   const [courses, setCourses] = useState([]);
@@ -81,6 +82,7 @@ function LearnerDashboard() {
 
   return (
     <>
+      <ToastContainer />
       <nav>
         <Header />
       </nav>
@@ -105,6 +107,9 @@ function LearnerDashboard() {
                       }}
                     />
                   </div>
+                  <Link to={`/student/course/${course.course.courseId}`}>
+                    <button style={styles.viewButton}>View Details</button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -206,6 +211,17 @@ const styles = {
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
+  },
+  viewButton: {
+    padding: "8px 12px",
+    fontSize: "14px",
+    backgroundColor: "#2196f3",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    alignSelf: "flex-start",
+    marginTop: "10px",
   },
 };
 

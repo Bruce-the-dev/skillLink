@@ -61,11 +61,11 @@ const router = createBrowserRouter([
         element: <CourseBrowsingPage />,
       },
       {
-        path: "course",
+        path: "course/:courseId",
         element: <CourseDetailPage />,
       },
       {
-        path: "assessment",
+        path: "assessment/:courseId",
         element: <AssessmentSubmissionPage />,
       },
       {
