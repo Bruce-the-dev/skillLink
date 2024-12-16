@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-
+import Header from "./Header";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -8,13 +8,16 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/users/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/users/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       if (response.ok) {
         toast.success("Password reset instructions sent to your email!");
@@ -29,20 +32,31 @@ const ForgotPassword = () => {
   return (
     <div
       style={{
-        maxWidth: "400px",
-        margin: "auto",
-        padding: "1em",
-        marginTop: "70px",
-        border: "1px solid #ddd",
-        borderRadius: "5px",
-        boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
+        padding: "32px",
+        width: "400px",
+        margin: "70px auto", // Centered and spaced from the top
+        backgroundColor: "#EBECF0",
+        borderRadius: "16px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Soft shadow
       }}
     >
       <ToastContainer />
-      <h2>Forgot Password</h2>
+      <Header />
+      <h2
+        style={{
+          textAlign: "center",
+          marginBottom: "1em",
+          color: "#333",
+          fontSize: "24px",
+        }}
+      >
+        Forgot Password
+      </h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Email:
+        <label style={{ display: "block", marginBottom: "16px" }}>
+          <span style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+            Email:
+          </span>
           <input
             type="email"
             name="email"
@@ -51,24 +65,31 @@ const ForgotPassword = () => {
             required
             style={{
               width: "100%",
-              padding: "0.5em",
-              marginTop: "0.2em",
-              marginBottom: "1em",
+              padding: "12px",
+              borderRadius: "20px",
               border: "1px solid #ddd",
-              borderRadius: "4px",
+              boxSizing: "border-box",
+              outline: "none",
+              fontSize: "16px",
+              boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
+              transition: "all 0.2s ease-in-out",
             }}
           />
         </label>
-        <br />
         <button
           type="submit"
           style={{
-            padding: "0.5em 1em",
-            backgroundColor: "#007BFF",
-            color: "#fff",
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#AE1100",
+            color: "#FFF",
+            fontSize: "16px",
+            fontWeight: "600",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "20px",
             cursor: "pointer",
+            textTransform: "uppercase",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           Reset Password

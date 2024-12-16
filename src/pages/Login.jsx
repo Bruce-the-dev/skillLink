@@ -73,21 +73,29 @@ const Login = () => {
   return (
     <div
       style={{
-        maxWidth: "400px",
-        margin: "auto",
-        padding: "1em",
-        marginTop: "70px", // Ensure it doesn't overlap with a fixed header
-        border: "1px solid #ddd",
-        borderRadius: "5px",
-        boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
+        padding: "32px",
+        width: "400px",
+        margin: "70px auto", // Centered and spaced from the top
+        backgroundColor: "#EBECF0",
+        borderRadius: "16px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Soft shadow
       }}
     >
       <ToastContainer />
       <Header />
-      <h2>Login</h2>
+      <h2
+        style={{
+          textAlign: "center",
+          marginBottom: "1em",
+          color: "#333",
+          fontSize: "24px",
+        }}
+      >
+        Login
+      </h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Username:
+        <label style={{ display: "block", marginBottom: "16px" }}>
+          <span style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Username:</span>
           <input
             type="text"
             name="username"
@@ -96,17 +104,19 @@ const Login = () => {
             required
             style={{
               width: "100%",
-              padding: "0.5em",
-              marginTop: "0.2em",
-              marginBottom: "1em",
+              padding: "12px",
+              borderRadius: "20px",
               border: "1px solid #ddd",
-              borderRadius: "4px",
+              boxSizing: "border-box",
+              outline: "none",
+              fontSize: "16px",
+              boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
+              transition: "all 0.2s ease-in-out",
             }}
           />
         </label>
-        <br />
-        <label>
-          Password:
+        <label style={{ display: "block", marginBottom: "16px" }}>
+          <span style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Password:</span>
           <input
             type="password"
             name="password"
@@ -115,32 +125,44 @@ const Login = () => {
             required
             style={{
               width: "100%",
-              padding: "0.5em",
-              marginTop: "0.2em",
-              marginBottom: "1em",
+              padding: "12px",
+              borderRadius: "20px",
               border: "1px solid #ddd",
-              borderRadius: "4px",
+              boxSizing: "border-box",
+              outline: "none",
+              fontSize: "16px",
+              boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
+              transition: "all 0.2s ease-in-out",
             }}
           />
         </label>
-        <br />
         <button
           type="submit"
           style={{
-            padding: "0.5em 1em",
-            backgroundColor: "#007BFF",
-            color: "#fff",
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#AE1100",
+            color: "#FFF",
+            fontSize: "16px",
+            fontWeight: "600",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "20px",
             cursor: "pointer",
-          }}
+            textTransform: "uppercase",
+            transition: "all 0.3s ease-in-out",
+          }
+        }
         >
           Login
         </button>
         <p style={{ marginTop: "1em", textAlign: "center" }}>
           <Link
             to="/forgot-password"
-            style={{ color: "#007BFF", textDecoration: "none" }}
+            style={{
+              color: "#007BFF",
+              textDecoration: "none",
+              fontSize: "14px",
+            }}
           >
             Forgot Password?
           </Link>

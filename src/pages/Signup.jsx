@@ -33,10 +33,10 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     // Create a FormData object
     const formData = new FormData();
-  
+
     // Append user data as a JSON string
     const user = {
       username: formdata.username,
@@ -47,18 +47,18 @@ const Signup = () => {
       skills: formdata.skills,
     };
     formData.append("user", JSON.stringify(user));
-  
+
     // Append the profile image if it exists
     if (formdata.ProfileImage) {
       formData.append("imageFile", formdata.ProfileImage);
     }
-  
+
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
         body: formData, // Send the FormData object
       });
-  
+
       if (response.ok) {
         toast.success("User created successfully");
         setformdata({
@@ -81,229 +81,176 @@ const Signup = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <>
       <Header />
-      <div
-        style={{
-          maxWidth: "400px",
-          margin: "auto",
-          padding: "1em",
-          marginTop: "70px", // Adjust height to account for the fixed header
-        }}
-      >
-        <h2
-          style={{ textAlign: "center", color: "#333", marginBottom: "1rem" }}
-        >
-          Sign Up
-        </h2>
-        <form onSubmit={handleSubmit} style={{ fontSize: "0.9rem" }}>
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Username:
-            </label>
+      <form onSubmit={handleSubmit} style={formStyles.form}>
+        <div style={formStyles.segment}>
+          <h1>Sign Up</h1>
+        </div>
+
+        <div style={formStyles.flexContainer}>
+          <label style={formStyles.label}>
             <input
               type="text"
               name="username"
               value={formdata.username}
-              required
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                boxSizing: "border-box",
-              }}
+              placeholder="Username"
+              required
+              style={formStyles.input}
             />
-          </div>
+          </label>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Full Names:
-            </label>
+          <label style={formStyles.label}>
             <input
               type="text"
               name="name"
               value={formdata.name}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                boxSizing: "border-box",
-              }}
+              placeholder="Full Names"
+              required
+              style={formStyles.input}
             />
-          </div>
+          </label>
+        </div>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Email:
-            </label>
+        <div style={formStyles.flexContainer}>
+          <label style={formStyles.label}>
             <input
               type="email"
               name="email"
               value={formdata.email}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                boxSizing: "border-box",
-              }}
+              placeholder="Email"
+              required
+              style={formStyles.input}
             />
-          </div>
+          </label>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Password:
-            </label>
+          <label style={formStyles.label}>
             <input
               type="password"
               name="password"
               value={formdata.password}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                boxSizing: "border-box",
-              }}
+              placeholder="Password"
+              required
+              style={formStyles.input}
             />
-          </div>
+          </label>
+        </div>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Role:
-            </label>
+        <div style={formStyles.flexContainer}>
+          <label style={formStyles.label}>
+            <input
+              type="text"
+              name="skills"
+              value={formdata.skills}
+              onChange={handleChange}
+              placeholder="Skills"
+              style={formStyles.input}
+            />
+          </label>
+
+          <label style={formStyles.label}>
             <select
               name="role"
               value={formdata.role}
               onChange={handleRoleChange}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                backgroundColor: "#fff",
-                boxSizing: "border-box",
-              }}
+              style={formStyles.input}
             >
               <option value="">Select a Role</option>
               <option value="STUDENT">Student</option>
               <option value="TEACHER">Teacher</option>
               <option value="ADMIN">Admin</option>
             </select>
-          </div>
+          </label>
+        </div>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Skills:
-            </label>
-            <input
-              type="text"
-              name="skills"
-              value={formdata.skills}
-              onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
+        <label style={formStyles.fileInput}>
+          <input
+            type="file"
+            name="ProfileImage"
+            onChange={(e) =>
+              setformdata({ ...formdata, ProfileImage: e.target.files[0] })
+            }
+            style={formStyles.input}
+          />
+          <span>Profile Image</span>
+        </label>
 
-          <div style={{ marginBottom: "1.5rem" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#555",
-              }}
-            >
-              Profile Image:
-            </label>
-            <input
-              type="file"
-              name="ProfileImage"
-              onChange={(e) =>
-                setformdata({ ...formdata, ProfileImage: e.target.files[0] })
-              }
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                backgroundColor: "#fff",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
+        <button type="submit" className="red" disabled={loading} style={formStyles.button}>
+          {loading ? "Saving..." : "Save User"}
+        </button>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "0.8rem",
-              backgroundColor: loading ? "#ccc" : "#007BFF",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            {loading ? "Saving..." : "Save User"}
-          </button>
-        </form>
         <ToastContainer position="top-center" />
-      </div>
+      </form>
     </>
   );
+};
+
+// Inline CSS in JS
+const formStyles = {
+  form: { 
+    marginLeft: "360px",
+    padding: "32px", // Increased padding for a bigger form
+    width: "700px", // Increased width for a larger form
+    margin: "0 auto",
+    backgroundColor: "#EBECF0",
+    borderRadius: "16px",
+  },
+  segment: {
+    padding: "32px 0",
+    textAlign: "center",
+  },
+  label: {
+    display: "block",
+    marginBottom: "24px",
+    width: "100%",
+  },
+  input: {
+    marginRight: "8px",
+    padding: "8px",
+    boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
+    width: "100%",
+    boxSizing: "border-box",
+    transition: "all 0.2s ease-in-out",
+    borderRadius: "20px",
+    border: "none",
+    outline: "none",
+    fontSize: "16px",
+  },
+  fileInput: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  button: {
+    width: "100%",
+    backgroundColor: "#AE1100",
+    color: "#FFF",
+    fontSize: "16px",
+    fontWeight: "600",
+    padding: "12px",
+    borderRadius: "20px",
+    border: "none",
+    cursor: "pointer",
+    textTransform: "uppercase",
+    transition: "all 0.3s ease-in-out", // Smooth transition for all properties
+  },
+  buttonHover: {
+    backgroundColor: "#9C0F00", // Darker color on hover
+    transform: "scale(1.05)", // Slightly grow the button on hover
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)", // Add a shadow effect
+  },
+  
+  flexContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "16px",  // Space between elements
+  },
 };
 
 export default Signup;
