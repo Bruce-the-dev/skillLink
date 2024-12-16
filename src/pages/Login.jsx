@@ -128,22 +128,44 @@ const Login = () => {
           />
         </label>
         <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "12px",
-            backgroundColor: "#AE1100",
-            color: "#FFF",
-            fontSize: "16px",
-            fontWeight: "600",
-            border: "none",
-            borderRadius: "20px",
-            cursor: "pointer",
-            textTransform: "uppercase",
-          }}
-        >
-          Login
-        </button>
+  type="submit"
+  style={{
+    marginTop: "30px",
+    width: "97%",
+    height: "40px",
+    padding: "12px",
+    backgroundColor: "rgba(99, 21, 233, 0.7)", // Deep purple
+    color: "#FFF",
+    fontSize: "16px",
+    fontWeight: "600",
+    border: "none",
+    borderRadius: "20px",
+    cursor: "pointer",
+    textTransform: "uppercase",
+    transition: "background-color 0.3s, transform 0.4s, box-shadow 0.4s",
+    boxShadow: "0 4px 15px rgba(73, 10, 117, 0.35)", // Initial soft shadow
+  }}
+  onMouseOver={(e) => {
+    e.target.style.backgroundColor = "linear-gradient(90deg, #8247E5, #B15CFF)"; // Gradient
+    e.target.style.boxShadow = "0 10px 30px rgba(130, 71, 229, 0.7)"; // Stronger glow
+    e.target.style.transform = "scale(1.1) translateY(-5px)"; // Slight enlargement and lift
+  }}
+  onMouseOut={(e) => {
+    e.target.style.backgroundColor = "#6A0DAD"; // Reset to original purple
+    e.target.style.boxShadow = "0 4px 15px rgba(106, 13, 173, 0.3)"; // Reset shadow
+    e.target.style.transform = "scale(1) translateY(0)"; // Reset size and position
+  }}
+  onMouseDown={(e) => {
+    e.target.style.transform = "scale(0.95)"; // Slight shrink on click
+    e.target.style.boxShadow = "0 2px 10px rgba(106, 13, 173, 0.5)"; // Dim glow on press
+  }}
+  onMouseUp={(e) => {
+    e.target.style.transform = "scale(1.1) translateY(-5px)"; // Return to hover state
+    e.target.style.boxShadow = "0 10px 30px rgba(130, 71, 229, 0.7)";
+  }}
+>
+  Login
+</button>
 
         {otpSent && (
           <>
@@ -160,9 +182,11 @@ const Login = () => {
             <button
               type="submit"
               style={{
-                width: "100%",
+                marginTop: "30px",
+                width: "97%",
+                height: "40px",
                 padding: "12px",
-                backgroundColor: "#AE1100",
+                backgroundColor: "rgba(99, 21, 233, 0.7)", // Deep purple
                 color: "#FFF",
                 fontSize: "16px",
                 fontWeight: "600",
@@ -170,6 +194,26 @@ const Login = () => {
                 borderRadius: "20px",
                 cursor: "pointer",
                 textTransform: "uppercase",
+                transition: "background-color 0.3s, transform 0.4s, box-shadow 0.4s",
+                boxShadow: "0 4px 15px rgba(73, 10, 117, 0.35)", // Initial soft shadow
+              }}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = "linear-gradient(90deg, #8247E5, #B15CFF)"; // Gradient
+                e.target.style.boxShadow = "0 10px 30px rgba(130, 71, 229, 0.7)"; // Stronger glow
+                e.target.style.transform = "scale(1.1) translateY(-5px)"; // Slight enlargement and lift
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = "#6A0DAD"; // Reset to original purple
+                e.target.style.boxShadow = "0 4px 15px rgba(106, 13, 173, 0.3)"; // Reset shadow
+                e.target.style.transform = "scale(1) translateY(0)"; // Reset size and position
+              }}
+              onMouseDown={(e) => {
+                e.target.style.transform = "scale(0.95)"; // Slight shrink on click
+                e.target.style.boxShadow = "0 2px 10px rgba(106, 13, 173, 0.5)"; // Dim glow on press
+              }}
+              onMouseUp={(e) => {
+                e.target.style.transform = "scale(1.1) translateY(-5px)"; // Return to hover state
+                e.target.style.boxShadow = "0 10px 30px rgba(130, 71, 229, 0.7)";
               }}
             >
               Verify OTP
