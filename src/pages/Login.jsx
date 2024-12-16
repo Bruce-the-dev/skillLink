@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import Header from "./Header";
 
@@ -45,7 +45,7 @@ const Login = () => {
       const data = await response.json();
       toast.success("User logged in successfully");
 
-      // Save login details to cookies (for example, role and username)
+      // Save login details to cookies
       Cookies.set("id", data.userId);
       Cookies.set("username", data.username);
       Cookies.set("role", data.role);
@@ -59,13 +59,12 @@ const Login = () => {
       // Redirect based on role
       const role = data.role;
       if (role === "TEACHER") {
-        navigate(`/instructor`); // Static path for instructor
+        navigate(`/instructor`);
       } else if (role === "STUDENT") {
-        navigate(`/student`); // Static path for student
+        navigate(`/student`);
       } else {
-        navigate("/Signup"); // Default redirection
+        navigate("/Signup");
       }
-      // eslint-disable-next-line no-unused-vars
     } catch (e) {
       toast.error("An error occurred while connecting to the server.");
     }
@@ -106,7 +105,6 @@ const Login = () => {
           />
         </label>
         <br />
-
         <label>
           Password:
           <input
@@ -126,7 +124,6 @@ const Login = () => {
           />
         </label>
         <br />
-
         <button
           type="submit"
           style={{
@@ -140,6 +137,14 @@ const Login = () => {
         >
           Login
         </button>
+        <p style={{ marginTop: "1em", textAlign: "center" }}>
+          <Link
+            to="/forgot-password"
+            style={{ color: "#007BFF", textDecoration: "none" }}
+          >
+            Forgot Password?
+          </Link>
+        </p>
       </form>
     </div>
   );

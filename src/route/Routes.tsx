@@ -1,7 +1,11 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
+import ForgotPassword from "../pages/ForgotPassword";
 import InboxPage from "../pages/Inbox";
+import AssessmentCreation from "../pages/Instructor/AssessmentCreation";
+import AssessmentGradingPage from "../pages/Instructor/AssessmentGrade";
 import CategoryPage from "../pages/Instructor/CategoryPage";
+import CourseManagementPage from "../pages/Instructor/CourseMgt";
 import CreateCourse from "../pages/Instructor/CreateCourse";
 import InstructorDashboard from "../pages/Instructor/InstructorDashboard";
 import Login from "../pages/Login";
@@ -13,9 +17,6 @@ import CourseBrowsingPage from "../pages/Student/CourseBrowsing";
 import CourseDetailPage from "../pages/Student/CourseDetail";
 import LearnerDashboard from "../pages/Student/LearnerDashboard";
 import UpdateProfile from "../pages/UpdateProfile";
-import CourseManagementPage from "../pages/Instructor/CourseMgt";
-import AssessmentCreation from "../pages/Instructor/AssessmentCreation";
-import AssessmentGradingPage from "../pages/Instructor/AssessmentGrade";
 import Dashboard from "../Universal/Dashboard";
 
 const router = createBrowserRouter([
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "forgot-password", // Add Forgot Password route
+        element: <ForgotPassword />,
       },
     ],
   },
