@@ -9,8 +9,12 @@ const Login = () => {
     username: "",
     password: "",
   });
+  const [isTwoFactorRequired, setIsTwoFactorRequired] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [otp, setOtp] = useState("");  // State for OTP
+  const [otpSent, setOtpSent] = useState(false);  // State to track OTP sent
+  const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
-  const [LoggedIn, setLoggedIn] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,9 +24,31 @@ const Login = () => {
     });
   };
 
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);  // Handle OTP input change
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+
+    if (otpSent) {
+      // If OTP is sent, verify OTP
+      const response = await fetch("http://localhost:8080/api/users/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: formdata.username, otp: otp }),
+      });
+
+      if (response.ok) {
+        toast.success("Login successful!");
+        navigate("/dashboard");
+      } else {
+        toast.error("Invalid OTP");
+      }
+    } else {
+      // If OTP not sent, proceed with regular login
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: {
@@ -43,30 +69,47 @@ const Login = () => {
       }
 
       const data = await response.json();
-      toast.success("User logged in successfully");
+      toast.success("Login successful, please check your email for OTP.");
+      setOtpSent(true);  // Mark OTP as sent and show the OTP input
+    }
+  };
 
-      // Save login details to cookies
-      Cookies.set("id", data.userId);
-      Cookies.set("username", data.username);
-      Cookies.set("role", data.role);
-
-      setFormData({
-        username: "",
-        password: "",
+  const handleTwoFactorSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:8080/api/users/verify-2fa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: formdata.username, code: twoFactorCode }),
       });
-      setLoggedIn(true);
 
-      // Redirect based on role
-      const role = data.role;
-      if (role === "TEACHER") {
-        navigate(`/instructor`);
-      } else if (role === "STUDENT") {
-        navigate(`/student`);
-      } else {
-        navigate("/Signup");
+      if (!response.ok) {
+        toast.error("Invalid 2FA code");
+        return;
       }
+
+      const data = await response.json();
+      handleLoginSuccess(data);
     } catch (e) {
-      toast.error("An error occurred while connecting to the server.");
+      toast.error("Error while verifying 2FA code.");
+    }
+  };
+
+  const handleLoginSuccess = (data) => {
+    Cookies.set("id", data.userId);
+    Cookies.set("username", data.username);
+    Cookies.set("role", data.role);
+    setLoggedIn(true);
+
+    // Redirect based on role
+    if (data.role === "TEACHER") {
+      navigate(`/instructor`);
+    } else if (data.role === "STUDENT") {
+      navigate(`/student`);
+    } else {
+      navigate("/Signup");
     }
   };
 
@@ -75,22 +118,15 @@ const Login = () => {
       style={{
         padding: "32px",
         width: "400px",
-        margin: "70px auto", // Centered and spaced from the top
+        margin: "70px auto",
         backgroundColor: "#EBECF0",
         borderRadius: "16px",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Soft shadow
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >
       <ToastContainer />
       <Header />
-      <h2
-        style={{
-          textAlign: "center",
-          marginBottom: "1em",
-          color: "#333",
-          fontSize: "24px",
-        }}
-      >
+      <h2 style={{ textAlign: "center", marginBottom: "1em", color: "#333", fontSize: "24px" }}>
         Login
       </h2>
       <form onSubmit={handleSubmit}>
@@ -102,17 +138,7 @@ const Login = () => {
             value={formdata.username}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "20px",
-              border: "1px solid #ddd",
-              boxSizing: "border-box",
-              outline: "none",
-              fontSize: "16px",
-              boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
-              transition: "all 0.2s ease-in-out",
-            }}
+            style={{ width: "100%", padding: "12px", borderRadius: "20px", border: "1px solid #ddd" }}
           />
         </label>
         <label style={{ display: "block", marginBottom: "16px" }}>
@@ -123,17 +149,7 @@ const Login = () => {
             value={formdata.password}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "20px",
-              border: "1px solid #ddd",
-              boxSizing: "border-box",
-              outline: "none",
-              fontSize: "16px",
-              boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
-              transition: "all 0.2s ease-in-out",
-            }}
+            style={{ width: "100%", padding: "12px", borderRadius: "20px", border: "1px solid #ddd" }}
           />
         </label>
         <button
@@ -149,12 +165,43 @@ const Login = () => {
             borderRadius: "20px",
             cursor: "pointer",
             textTransform: "uppercase",
-            transition: "all 0.3s ease-in-out",
-          }
-        }
+          }}
         >
           Login
         </button>
+        
+        {otpSent && (
+          <>
+            <label style={{ display: "block", marginTop: "16px" }}>
+              <span style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Enter OTP:</span>
+              <input
+                type="text"
+                value={otp}
+                onChange={handleOtpChange}
+                required
+                style={{ width: "100%", padding: "12px", borderRadius: "20px", border: "1px solid #ddd" }}
+              />
+            </label>
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: "12px",
+                backgroundColor: "#AE1100",
+                color: "#FFF",
+                fontSize: "16px",
+                fontWeight: "600",
+                border: "none",
+                borderRadius: "20px",
+                cursor: "pointer",
+                textTransform: "uppercase",
+              }}
+            >
+              Verify OTP
+            </button>
+          </>
+        )}
+
         <p style={{ marginTop: "1em", textAlign: "center" }}>
           <Link
             to="/forgot-password"
