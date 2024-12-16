@@ -9,11 +9,8 @@ const Login = () => {
     username: "",
     password: "",
   });
-  const [isTwoFactorRequired, setIsTwoFactorRequired] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState("");
-  const [otp, setOtp] = useState("");  // State for OTP
-  const [otpSent, setOtpSent] = useState(false);  // State to track OTP sent
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [otp, setOtp] = useState(""); // State for OTP
+  const [otpSent, setOtpSent] = useState(false); // State to track OTP sent
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,12 +22,12 @@ const Login = () => {
   };
 
   const handleOtpChange = (e) => {
-    setOtp(e.target.value);  // Handle OTP input change
+    setOtp(e.target.value); // Handle OTP input change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (otpSent) {
       // If OTP is sent, verify OTP
       const response = await fetch("http://localhost:8080/api/users/verify-otp", {
@@ -40,15 +37,32 @@ const Login = () => {
         },
         body: JSON.stringify({ username: formdata.username, otp: otp }),
       });
-
+  
       if (response.ok) {
+        const data = await response.json();
         toast.success("Login successful!");
-        navigate("/dashboard");
+  
+        // Store the user data in cookies
+        Cookies.set("id", data.userId);  // Ensure you're saving userId if necessary
+        Cookies.set("username", formdata.username); // Ensure you save the username
+        Cookies.set("role", data.role);  // Store the role in the cookie
+  
+        // Log the role and the response data to debug
+        console.log("User role:", data.role);
+  
+        // Redirect based on the role
+        if (data.role === "TEACHER") {
+          navigate("/instructor");
+        } else if (data.role === "STUDENT") {
+          navigate("/student");
+        } else {
+          navigate("/Signup");  // In case there's no valid role or unhandled role
+        }
       } else {
         toast.error("Invalid OTP");
       }
     } else {
-      // If OTP not sent, proceed with regular login
+      // If OTP is not yet sent, proceed with regular login
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: {
@@ -56,7 +70,7 @@ const Login = () => {
         },
         body: JSON.stringify(formdata),
       });
-
+  
       if (!response.ok) {
         if (response.status === 401) {
           toast.error("Invalid password");
@@ -67,52 +81,13 @@ const Login = () => {
         }
         return;
       }
-
+  
       const data = await response.json();
       toast.success("Login successful, please check your email for OTP.");
-      setOtpSent(true);  // Mark OTP as sent and show the OTP input
+      setOtpSent(true);  // Mark OTP as sent
     }
   };
-
-  const handleTwoFactorSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:8080/api/users/verify-2fa", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: formdata.username, code: twoFactorCode }),
-      });
-
-      if (!response.ok) {
-        toast.error("Invalid 2FA code");
-        return;
-      }
-
-      const data = await response.json();
-      handleLoginSuccess(data);
-    } catch (e) {
-      toast.error("Error while verifying 2FA code.");
-    }
-  };
-
-  const handleLoginSuccess = (data) => {
-    Cookies.set("id", data.userId);
-    Cookies.set("username", data.username);
-    Cookies.set("role", data.role);
-    setLoggedIn(true);
-
-    // Redirect based on role
-    if (data.role === "TEACHER") {
-      navigate(`/instructor`);
-    } else if (data.role === "STUDENT") {
-      navigate(`/student`);
-    } else {
-      navigate("/Signup");
-    }
-  };
-
+  
   return (
     <div
       style={{
@@ -169,7 +144,7 @@ const Login = () => {
         >
           Login
         </button>
-        
+
         {otpSent && (
           <>
             <label style={{ display: "block", marginTop: "16px" }}>
