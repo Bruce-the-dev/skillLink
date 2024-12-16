@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Logo from "./Logo.png";
 
 const Header = () => {
   return (
@@ -17,7 +18,12 @@ const Header = () => {
     >
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
-          SkillLink
+        <img
+             src={Logo}
+             alt="SkillLink"
+             style={{ height: "40px", width: "auto" }} // Adjust size as needed
+          />
+
         </Link>
         <button
           className="navbar-toggler"
