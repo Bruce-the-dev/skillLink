@@ -84,7 +84,7 @@ const Login = () => {
   
       const data = await response.json();
       toast.success("Login successful, please check your email for OTP.");
-      setOtpSent(true);  // Mark OTP as sent
+      setOtpSent(true);  
     }
   };
   
