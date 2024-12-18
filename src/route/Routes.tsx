@@ -18,6 +18,7 @@ import CourseDetailPage from "../pages/Student/CourseDetail";
 import LearnerDashboard from "../pages/Student/LearnerDashboard";
 import UpdateProfile from "../pages/UpdateProfile";
 import Dashboard from "../Universal/Dashboard";
+import AdminDashboard from "../Universal/AdminDashboard";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "forgot-password", // Add Forgot Password route
         element: <ForgotPassword />,
+      },
+      {
+        path: "Admindashboard",
+        element: <AdminDashboard />,
       },
     ],
   },
