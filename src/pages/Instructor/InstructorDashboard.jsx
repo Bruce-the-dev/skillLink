@@ -10,9 +10,10 @@ const InstructorDashboard = () => {
   const [cookies] = useCookies(["id"]); // Get the user ID from cookies
   const instructorId = cookies.id;
 
-  // State for courses, notifications, and selection
+  // State for courses, notifications, assessments, and selection
   const [courses, setCourses] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null); // Track selected course
@@ -35,6 +36,16 @@ const InstructorDashboard = () => {
         }
         const coursesData = await coursesResponse.json();
         setCourses(coursesData);
+
+        // Fetch assessments
+        const assessmentsResponse = await fetch(
+          `http://localhost:8080/api/assessments`
+        );
+        if (!assessmentsResponse.ok) {
+          throw new Error("Failed to fetch assessments.");
+        }
+        const assessmentsData = await assessmentsResponse.json();
+        setAssessments(assessmentsData);
 
         // Fetch notifications
         const notificationsResponse = await fetch(
@@ -99,6 +110,48 @@ const InstructorDashboard = () => {
         >
           Instructor Dashboard
         </h1>
+
+        {/* Assessments Overview */}
+        <section style={{ marginBottom: "30px" }}>
+          <h2 style={{ marginBottom: "15px", color: "#444" }}>
+            My Assessments
+          </h2>
+          {assessments.length > 0 ? (
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                backgroundColor: "#f9f9f9",
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                borderRadius: "8px",
+                overflow: "hidden",
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: "#333", color: "#fff" }}>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Course</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Type</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>
+                    Max Score
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {assessments.map((assessment) => (
+                  <tr key={assessment.assessmentId}>
+                    <td style={{ padding: "10px" }}>
+                      {assessment.course.title}
+                    </td>
+                    <td style={{ padding: "10px" }}>{assessment.type}</td>
+                    <td style={{ padding: "10px" }}>{assessment.maxScore}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No assessments found.</p>
+          )}
+        </section>
 
         {/* Courses Overview */}
         <section style={{ marginBottom: "30px" }}>
