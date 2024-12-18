@@ -13,16 +13,16 @@ function CreateCourse() {
     level: "",
     instructor: "",
   });
-  const [categories, setCategories] = useState([]); // To store categories
+  const [categories, setCategories] = useState([]);
   const [instructors, setInstructors] = useState([]);
-  const [loadingInstructors, setLoadingInstructors] = useState(true); // Loading state for instructors
-  const [loadingCategories, setLoadingCategories] = useState(true); // Loading state for categories
-  const [isLoading, setIsLoading] = useState(false); // Loading state for course creation
+  const [loadingInstructors, setLoadingInstructors] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const [cookies] = useCookies(["id"]);
-  const instructorId = cookies.id; // Access the instructor ID from cookies
-  // Fetch categories when the component is mounted
+  const instructorId = cookies.id;
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -33,7 +33,15 @@ function CreateCourse() {
           throw new Error("Failed to fetch categories");
         }
         const categoryList = await response.json();
-        setCategories(categoryList); // Store the categories in state
+        setCategories(categoryList);
+
+        // Navigate to the "Create Category" page if the list is empty
+        if (categoryList.length === 0) {
+          toast.info(
+            "No categories found. Redirecting to create category page."
+          );
+          setTimeout(() => navigate("Course/category"), 1000); // Add slight delay for toast visibility
+        }
       } catch (error) {
         toast.error("Error fetching categories: " + error.message);
       } finally {
@@ -42,17 +50,16 @@ function CreateCourse() {
     };
 
     fetchCategories();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (!instructorId) {
       toast.error("Instructor ID is missing in cookies.");
-      console.log(instructorId);
       setIsLoading(false);
       return;
     }
   });
-  // Fetch instructor when the component is mounted
+
   useEffect(() => {
     const fetchInstructors = async () => {
       try {
@@ -66,7 +73,7 @@ function CreateCourse() {
           throw new Error("Failed to fetch The instructor");
         }
         const instructorList = await response.json();
-        setInstructors(instructorList); // Store the categories in state
+        setInstructors(instructorList);
       } catch (error) {
         toast.error("Error fetching instructor: " + error.message);
       } finally {
@@ -75,46 +82,44 @@ function CreateCourse() {
     };
 
     fetchInstructors();
-  }, []);
+  }, [instructorId]);
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCourse({ ...course, [name]: value });
   };
+
   const handleCategoryChange = (e) => {
     const selectedCategory = categories.find(
       (cat) => String(cat.categoryId) === e.target.value
-    ); // Find the selected category object
+    );
     setCourse({ ...course, category: selectedCategory });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Data to submit:", course); // Debugging
+    console.log("Data to submit:", course);
 
-    // Prepare the course data to be sent
     const courseData = {
       title: course.title,
       description: course.description,
-      category: course.category, // Send the category ID instead of the name
+      category: course.category,
       price: course.price,
       level: course.level,
-      instructor: instructorId, // Send the instructor ID instead of the name
+      instructor: instructorId,
     };
 
-    setIsLoading(true); // Set the loading state for course creation
+    setIsLoading(true);
 
     try {
       const response = await fetch("http://localhost:8080/api/courses/create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json", // Set content type to JSON
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(courseData), // Send data as JSON
+        body: JSON.stringify(courseData),
       });
 
-      // Check if the response is not OK
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Backend error response:", errorData);
@@ -124,10 +129,9 @@ function CreateCourse() {
       const createdCourse = await response.json();
       console.log("Course created successfully:", createdCourse);
       setTimeout(() => {
-        navigate("/instructor"); // Redirect to instructor courses page after successful course creation
+        navigate("/instructor");
       });
 
-      // Reset form upon success
       setCourse({
         title: "",
         description: "",
@@ -139,7 +143,7 @@ function CreateCourse() {
     } catch (error) {
       toast.error("Error: " + error.message);
     } finally {
-      setIsLoading(false); // Reset loading state after course creation attempt
+      setIsLoading(false);
     }
   };
 
@@ -175,7 +179,7 @@ function CreateCourse() {
           ) : (
             <select
               name="category"
-              value={course.category?.categoryId || ""} // Bind to category.id
+              value={course.category?.categoryId || ""}
               onChange={handleCategoryChange}
               required
             >
@@ -222,6 +226,13 @@ function CreateCourse() {
 
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Creating Course..." : "Create Course"}
+        </button>
+        <button
+          type="button"
+          disabled={isLoading}
+          onClick={() => navigate("/Course/category")} // Use a function reference
+        >
+          {isLoading ? "Redirecting to category page..." : "Create Category"}
         </button>
       </form>
     </div>

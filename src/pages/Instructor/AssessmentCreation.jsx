@@ -1,32 +1,54 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-
-// Initialize React-Toastify
+import "react-toastify/dist/ReactToastify.css";
 
 const AssessmentCreation = () => {
-  // Form state
+  const { courseId } = useParams();
+  const [courseName, setCourseName] = useState(""); // State for the fetched course name
   const [newAssessment, setNewAssessment] = useState({
-    course: "",
-    // deadline: "",
+    course: { courseId: courseId }, // Store the course ID to send to the backend
     type: "", // Quiz, Project, Peer Review
     maxScore: "",
+    deadline: "",
+    title: "", // Added a title field for the assessment
   });
   const navigate = useNavigate();
+
+  // Fetch the course name when the component mounts
+  useEffect(() => {
+    const fetchCourseName = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch the course name.");
+        }
+        const courseData = await response.json();
+        setCourseName(courseData.title); // Assume the backend returns a `title` field for the course
+      } catch (error) {
+        toast.error(`Error fetching course name: ${error.message}`);
+      }
+    };
+
+    fetchCourseName();
+  }, [courseId]);
+
   // Handle form submission
   const handleCreateAssessment = async (e) => {
     e.preventDefault();
 
-    // Prepare data to be sent to backend
+    // Prepare data to be sent to the backend
     const assessmentData = {
-      course: newAssessment.course,
+      course: newAssessment.course, // Send course ID
+      // title: newAssessment.title, // Send assessment title
       // deadline: newAssessment.deadline,
       type: newAssessment.type,
       maxScore: newAssessment.maxScore,
     };
 
     try {
-      // Send POST request to backend
       const response = await fetch(
         "http://localhost:8080/api/assessments/create",
         {
@@ -39,23 +61,20 @@ const AssessmentCreation = () => {
       );
 
       if (response.ok) {
-        const data = await response.json();
-        // If the request was successful, show success toast
         toast.success("Assessment created successfully!");
         // Reset form after successful submission
         setNewAssessment({
-          course: "",
-          // deadline: "",
+          course: courseId,
+          title: "",
+          deadline: "",
           type: "",
           maxScore: "",
         });
         navigate("/instructor");
       } else {
-        // If the request failed, show error toast
         toast.error("Failed to create assessment. Please try again.");
       }
     } catch (error) {
-      // Handle network errors or other issues
       toast.error("An error occurred. Please try again.");
     }
   };
@@ -71,22 +90,23 @@ const AssessmentCreation = () => {
           <label>Course: </label>
           <input
             type="text"
-            value={newAssessment.course}
-            onChange={(e) =>
-              setNewAssessment({ ...newAssessment, course: e.target.value })
-            }
-            required
-            style={{ marginLeft: "10px" }}
+            value={courseName}
+            disabled // Make this field read-only since it's fetched
+            style={{
+              marginLeft: "10px",
+              backgroundColor: "#f1f1f1",
+              border: "1px solid #ccc",
+            }}
           />
         </div>
         <div style={{ marginBottom: "10px" }}>
           <label>Assessment Title: </label>
           <input
             type="text"
-            // value={newAssessment.title}
-            // onChange={(e) =>
-            //   setNewAssessment({ ...newAssessment, title: e.target.value })
-            // }
+            value={newAssessment.title}
+            onChange={(e) =>
+              setNewAssessment({ ...newAssessment, title: e.target.value })
+            }
             required
             style={{ marginLeft: "10px" }}
           />
@@ -133,7 +153,14 @@ const AssessmentCreation = () => {
         </div>
         <button
           type="submit"
-          style={{ padding: "10px 15px", cursor: "pointer" }}
+          style={{
+            padding: "10px 15px",
+            cursor: "pointer",
+            backgroundColor: "#28a745",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+          }}
         >
           Create Assessment
         </button>

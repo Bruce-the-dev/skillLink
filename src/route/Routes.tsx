@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         // loader: signupLoader
       },
       {
-        path: "profile/:userId",
+        path: "profile/",
         element: <UpdateProfile />,
       },
       {
@@ -102,7 +102,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "CreateAssessment",
+        path: "CreateAssessment/:courseId",
         element: <AssessmentCreation />,
       },
       {

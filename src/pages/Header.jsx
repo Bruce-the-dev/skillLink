@@ -19,7 +19,11 @@ const Header = () => {
     >
       <div className="container-fluid d-flex align-items-center">
         {/* Brand Logo */}
-        <Link className="navbar-brand d-flex align-items-center" to="/" style={{ color: "#fff", textDecoration: "none" }}>
+        <Link
+          className="navbar-brand d-flex align-items-center"
+          to="/"
+          style={{ color: "#fff", textDecoration: "none" }}
+        >
           <img
             src={Logo}
             alt="SkillLink"
@@ -38,27 +42,22 @@ const Header = () => {
           aria-label="Toggle navigation"
           style={{ border: "none", color: "#fff" }}
         >
-          <span className="navbar-toggler-icon" style={{ color: "#fff" }}></span>
+          <span
+            className="navbar-toggler-icon"
+            style={{ color: "#fff" }}
+          ></span>
         </button>
 
         {/* Navbar Links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link
-                className="nav-link"
-                to="/login"
-                style={linkStyle}
-              >
+              <Link className="nav-link" to="/login" style={linkStyle}>
                 Login
               </Link>
             </li>
             <li className="nav-item">
-              <Link
-                className="nav-link"
-                to="/about"
-                style={linkStyle}
-              >
+              <Link className="nav-link" to="/about" style={linkStyle}>
                 About
               </Link>
             </li>

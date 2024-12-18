@@ -9,7 +9,7 @@ function AssessmentSubmissionPage() {
   const [error, setError] = useState(null);
   const [selectedFile, setSelectedFile] = useState({});
   const { courseId } = useParams();
-  const userId = 42; // Replace with actual user ID logic
+  // const userId = 42; // Replace with actual user ID logic
 
   // Fetch assessments from the backend
   useEffect(() => {
