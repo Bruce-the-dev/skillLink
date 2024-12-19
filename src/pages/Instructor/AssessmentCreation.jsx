@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "../Header"; // Import Header component
 
 const AssessmentCreation = () => {
   const { courseId } = useParams();
@@ -42,8 +43,6 @@ const AssessmentCreation = () => {
     // Prepare data to be sent to the backend
     const assessmentData = {
       course: newAssessment.course, // Send course ID
-      // title: newAssessment.title, // Send assessment title
-      // deadline: newAssessment.deadline,
       type: newAssessment.type,
       maxScore: newAssessment.maxScore,
     };
@@ -80,27 +79,64 @@ const AssessmentCreation = () => {
   };
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
+    <div
+      style={{
+        marginTop: "80px",
+        fontFamily: "Arial, sans-serif",
+        padding: "40px 20px",
+        background: "linear-gradient(135deg,rgb(0, 0, 0),rgba(3, 3, 3, 0.06))", // Gradient background
+        borderRadius: "10px",
+        boxShadow: "0 15px 40px rgba(0, 0, 0, 1)", // 3D effect
+        maxWidth: "900px",
+        margin: "0 auto",
+      }}
+    >
+      <Header />
       <ToastContainer />
-      <h1>Assessment Creation</h1>
+      <h1
+        style={{
+          textAlign: "center",
+          color: "#fff",
+          marginBottom: "40px",
+          fontSize: "36px",
+          textTransform: "uppercase",
+        }}
+      >
+        Assessment Creation
+      </h1>
 
       {/* Form for creating a new assessment */}
-      <form onSubmit={handleCreateAssessment} style={{ marginBottom: "20px" }}>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Course: </label>
+      <form
+        onSubmit={handleCreateAssessment}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          backgroundColor: "#fff",
+          borderRadius: "8px",
+          padding: "20px",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Course: </label>
           <input
             type="text"
             value={courseName}
-            disabled // Make this field read-only since it's fetched
+            disabled
             style={{
-              marginLeft: "10px",
-              backgroundColor: "#f1f1f1",
+              padding: "12px",
+              borderRadius: "8px",
               border: "1px solid #ccc",
+              backgroundColor: "#f1f1f1",
+              fontSize: "16px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Assessment Title: </label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Assessment Title: </label>
           <input
             type="text"
             value={newAssessment.title}
@@ -108,11 +144,19 @@ const AssessmentCreation = () => {
               setNewAssessment({ ...newAssessment, title: e.target.value })
             }
             required
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Deadline: </label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Deadline: </label>
           <input
             type="date"
             value={newAssessment.deadline}
@@ -120,18 +164,33 @@ const AssessmentCreation = () => {
               setNewAssessment({ ...newAssessment, deadline: e.target.value })
             }
             required
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Type: </label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Type: </label>
           <select
             value={newAssessment.type}
             onChange={(e) =>
               setNewAssessment({ ...newAssessment, type: e.target.value })
             }
             required
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           >
             <option value="">Select Type</option>
             <option value="Quiz">Quiz</option>
@@ -139,8 +198,9 @@ const AssessmentCreation = () => {
             <option value="Peer Review">Peer Review</option>
           </select>
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Max Score: </label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Max Score: </label>
           <input
             type="number"
             value={newAssessment.maxScore}
@@ -148,18 +208,37 @@ const AssessmentCreation = () => {
               setNewAssessment({ ...newAssessment, maxScore: e.target.value })
             }
             required
-            style={{ marginLeft: "10px" }}
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
+
         <button
           type="submit"
           style={{
-            padding: "10px 15px",
-            cursor: "pointer",
-            backgroundColor: "#28a745",
+            padding: "12px 20px",
+            backgroundColor: "#3b0170",
             color: "#fff",
+            fontSize: "18px",
             border: "none",
-            borderRadius: "5px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            boxShadow: "0 8px 15px rgba(0, 0, 0, 0.2)",
+            transition: "all 0.3s ease-in-out",
+          }}
+          onMouseOver={(e) => {
+            e.target.style.transform = "scale(1.05)";
+            e.target.style.boxShadow = "0 15px 25px rgba(0, 0, 0, 0.3)";
+          }}
+          onMouseOut={(e) => {
+            e.target.style.transform = "scale(1)";
+            e.target.style.boxShadow = "0 8px 15px rgba(0, 0, 0, 0.2)";
           }}
         >
           Create Assessment

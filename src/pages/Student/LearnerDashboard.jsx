@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Header from "../Header";
-import { toast, ToastContainer } from "react-toastify"; // Import react-toastify for notifications
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { toast, ToastContainer } from "react-toastify"; // Import react-toastify for notifications
+import Header from "../Header";
 
 function LearnerDashboard() {
   const [courses, setCourses] = useState([]);
@@ -81,6 +80,7 @@ function LearnerDashboard() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   const UpdateNotification = async (notificationId) => {
     if (!notificationId) {
       toast.error("Notification ID not found.");
@@ -127,17 +127,16 @@ function LearnerDashboard() {
         <Header />
       </nav>
       <div style={styles.dashboard}>
-        <h1>Welcome to Your Dashboard</h1>
+        <h1 style={styles.heading}>Welcome to Your Dashboard</h1>
 
         {/* Enrolled Courses Section */}
         <section style={styles.section}>
-          <h2>Enrolled Courses</h2>
+          <h2 style={styles.subheading}>Enrolled Courses</h2>
           {courses.length > 0 ? (
             <ul style={styles.list}>
               {courses.map((course) => (
                 <li key={course.enrollmentId} style={styles.card}>
-                  <h3>Course name:{course.course.title}</h3>
-                  {/* <p>Progress: {course.progress}%</p> */}
+                  <h3>Course name: {course.course.title}</h3>
                   <p>Enrollment Date: {course.enrollmentDate}</p>
                   <div style={styles.progressBar}>
                     <div
@@ -160,7 +159,7 @@ function LearnerDashboard() {
 
         {/* Notifications Section */}
         <section style={styles.section}>
-          <h2>New Notifications</h2>
+          <h2 style={styles.subheading}>New Notifications</h2>
           {notifications.length > 0 ? (
             <ul style={styles.list}>
               {notifications.map((notification) => (
@@ -184,7 +183,7 @@ function LearnerDashboard() {
 
         {/* Achievements Section */}
         <section style={styles.section}>
-          <h2>Achievements</h2>
+          <h2 style={styles.subheading}>Achievements</h2>
           {achievements.length > 0 ? (
             <ul style={styles.list}>
               {achievements.map((achievement) => (
@@ -202,7 +201,10 @@ function LearnerDashboard() {
 
         {/* Browse Courses Button */}
         <section style={styles.section}>
-          <button onClick={handleBrowseCourses} style={styles.browseButton}>
+          <button
+            onClick={handleBrowseCourses}
+            style={styles.browseButton}
+          >
             Browse Available Courses
           </button>
         </section>
@@ -218,13 +220,27 @@ const styles = {
     margin: "0 auto",
     maxWidth: "800px",
     padding: "20px",
-    backgroundColor: "#f9f9f9",
+    background: "linear-gradient(135deg,rgba(0, 0, 0, 0.12),rgb(24, 17, 39))", // Gradient background
     borderRadius: "8px",
+    color: "#fff",
+  },
+  heading: {
+    textAlign: "center",
+    marginBottom: "40px",
+    fontSize: "36px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+  subheading: {
+    marginBottom: "10px",
+    fontSize: "24px",
+    fontWeight: "600",
   },
   section: {
     marginBottom: "20px",
-    padding: "10px",
+    padding: "20px",
     backgroundColor: "#fff",
+    color: "#333",
     border: "1px solid #ddd",
     borderRadius: "8px",
   },
@@ -252,24 +268,24 @@ const styles = {
     marginRight: "10px",
   },
   browseButton: {
-    padding: "10px 20px",
+    padding: "12px 20px",
     fontSize: "16px",
-    backgroundColor: "#007bff", // Bootstrap primary color
+    backgroundColor: "#5e2a84", // Dark purple button
     color: "#fff",
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
+    transition: "background-color 0.3s ease-in-out",
   },
   viewButton: {
     padding: "8px 12px",
     fontSize: "14px",
-    backgroundColor: "#2196f3",
+    backgroundColor: "#6a4caf", // Cool purple shade
     color: "#fff",
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-    alignSelf: "flex-start",
-    marginTop: "10px",
+    transition: "background-color 0.3s ease-in-out",
   },
 };
 

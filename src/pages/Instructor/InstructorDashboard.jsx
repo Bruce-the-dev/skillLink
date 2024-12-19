@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import Header from "../Header";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "../Header";
 
 const InstructorDashboard = () => {
   const navigate = useNavigate();
@@ -99,21 +99,38 @@ const InstructorDashboard = () => {
       <ToastContainer />
       <div
         style={{
+          marginTop: "90px",
           fontFamily: "Arial, sans-serif",
           padding: "20px",
           maxWidth: "1200px",
           margin: "0 auto",
+          background: "linear-gradient(135deg,rgba(70, 59, 97, 0.39),rgb(26, 19, 41))", // Purple gradient
+          borderRadius: "20px", // Rounded corners
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 1)", // 3D shadow
         }}
       >
         <h1
-          style={{ textAlign: "center", marginBottom: "30px", color: "#333" }}
+          style={{
+            textAlign: "center",
+            marginBottom: "30px",
+            color: "#fff",
+            fontSize: "36px", // Larger title
+            textTransform: "uppercase",
+          }}
         >
           Instructor Dashboard
         </h1>
 
         {/* Assessments Overview */}
         <section style={{ marginBottom: "30px" }}>
-          <h2 style={{ marginBottom: "15px", color: "#444" }}>
+          <h2
+            style={{
+              marginBottom: "15px",
+              color: "#fff",
+              fontSize: "24px", // Slightly larger subheading
+              textTransform: "uppercase",
+            }}
+          >
             My Assessments
           </h2>
           {assessments.length > 0 ? (
@@ -125,25 +142,39 @@ const InstructorDashboard = () => {
                 boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
                 borderRadius: "8px",
                 overflow: "hidden",
+                border: "1px solid #ddd", // Subtle border
               }}
             >
               <thead>
-                <tr style={{ backgroundColor: "#333", color: "#fff" }}>
-                  <th style={{ padding: "10px", textAlign: "left" }}>Course</th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>Type</th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>
+                <tr
+                  style={{
+                    backgroundColor: "#6a44b5",
+                    color: "#fff",
+                    fontSize: "16px",
+                  }}
+                >
+                  <th style={{ padding: "12px", textAlign: "left" }}>Course</th>
+                  <th style={{ padding: "12px", textAlign: "left" }}>Type</th>
+                  <th style={{ padding: "12px", textAlign: "left" }}>
                     Max Score
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {assessments.map((assessment) => (
-                  <tr key={assessment.assessmentId}>
-                    <td style={{ padding: "10px" }}>
+                  <tr
+                    key={assessment.assessmentId}
+                    style={{
+                      backgroundColor: "#fff",
+                      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    <td style={{ padding: "12px" }}>
                       {assessment.course.title}
                     </td>
-                    <td style={{ padding: "10px" }}>{assessment.type}</td>
-                    <td style={{ padding: "10px" }}>{assessment.maxScore}</td>
+                    <td style={{ padding: "12px" }}>{assessment.type}</td>
+                    <td style={{ padding: "12px" }}>{assessment.maxScore}</td>
                   </tr>
                 ))}
               </tbody>
@@ -155,7 +186,16 @@ const InstructorDashboard = () => {
 
         {/* Courses Overview */}
         <section style={{ marginBottom: "30px" }}>
-          <h2 style={{ marginBottom: "15px", color: "#444" }}>My Courses</h2>
+          <h2
+            style={{
+              marginBottom: "15px",
+              color: "#fff",
+              fontSize: "24px",
+              textTransform: "uppercase",
+            }}
+          >
+            My Courses
+          </h2>
           {courses.length > 0 ? (
             <table
               style={{
@@ -168,40 +208,63 @@ const InstructorDashboard = () => {
               }}
             >
               <thead>
-                <tr style={{ backgroundColor: "#333", color: "#fff" }}>
-                  <th style={{ padding: "10px", textAlign: "left" }}>
+                <tr
+                  style={{
+                    backgroundColor: "#6a44b5",
+                    color: "#fff",
+                    fontSize: "16px",
+                  }}
+                >
+                  <th style={{ padding: "12px", textAlign: "left" }}>
                     Course Title
                   </th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>
+                  <th style={{ padding: "12px", textAlign: "left" }}>
                     Description
                   </th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>
+                  <th style={{ padding: "12px", textAlign: "left" }}>
                     Category
                   </th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>Price</th>
-                  <th style={{ padding: "10px", textAlign: "left" }}>
+                  <th style={{ padding: "12px", textAlign: "left" }}>Price</th>
+                  <th style={{ padding: "12px", textAlign: "left" }}>
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {courses.map((course) => (
-                  <tr key={course.courseId}>
-                    <td style={{ padding: "10px" }}>{course.title}</td>
-                    <td style={{ padding: "10px" }}>{course.description}</td>
-                    <td style={{ padding: "10px" }}>{course.category.name}</td>
-                    <td style={{ padding: "10px" }}>${course.price}</td>
-                    <td style={{ padding: "10px" }}>
+                  <tr
+                    key={course.courseId}
+                    style={{
+                      backgroundColor: "#fff",
+                      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    <td style={{ padding: "12px" }}>{course.title}</td>
+                    <td style={{ padding: "12px" }}>{course.description}</td>
+                    <td style={{ padding: "12px" }}>{course.category.name}</td>
+                    <td style={{ padding: "12px" }}>${course.price}</td>
+                    <td style={{ padding: "12px" }}>
                       <button
                         onClick={() => setSelectedCourse(course.courseId)}
                         style={{
-                          padding: "5px 10px",
-                          backgroundColor: "#007BFF",
+                          padding: "10px 20px",
+                          backgroundColor: "#7a57d1",
                           color: "#fff",
                           border: "none",
                           borderRadius: "5px",
                           cursor: "pointer",
                           fontSize: "14px",
+                          transition: "all 0.3s ease-in-out",
+                          boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
+                        }}
+                        onMouseOver={(e) => {
+                          e.target.style.transform = "scale(1.05)";
+                          e.target.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.3)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.target.style.transform = "scale(1)";
+                          e.target.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.2)";
                         }}
                       >
                         Select
@@ -218,7 +281,16 @@ const InstructorDashboard = () => {
 
         {/* Notifications Panel */}
         <section style={{ marginBottom: "30px" }}>
-          <h2 style={{ marginBottom: "15px", color: "#444" }}>Notifications</h2>
+          <h2
+            style={{
+              marginBottom: "15px",
+              color: "#fff",
+              fontSize: "24px",
+              textTransform: "uppercase",
+            }}
+          >
+            Notifications
+          </h2>
           {notifications.length > 0 ? (
             <ul
               style={{
@@ -234,12 +306,15 @@ const InstructorDashboard = () => {
                 <li
                   key={index}
                   style={{
-                    padding: "10px",
+                    padding: "12px",
                     borderBottom:
                       index !== notifications.length - 1
                         ? "1px solid #ddd"
                         : "none",
+                    transition: "background-color 0.3s ease-in-out",
                   }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#e9e9e9"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "#fff"}
                 >
                   {notification}
                 </li>
@@ -252,18 +327,37 @@ const InstructorDashboard = () => {
 
         {/* Quick Links */}
         <section>
-          <h2 style={{ marginBottom: "15px", color: "#444" }}>Quick Links</h2>
+          <h2
+            style={{
+              marginBottom: "15px",
+              color: "#fff",
+              fontSize: "24px",
+              textTransform: "uppercase",
+            }}
+          >
+            Quick Links
+          </h2>
           <button
             onClick={() => navigate("/Course/add")}
             style={{
-              marginRight: "10px",
-              padding: "10px 20px",
-              backgroundColor: "#007BFF",
+              marginRight: "15px",
+              padding: "12px 30px",
+              backgroundColor: "#7a57d1",
               color: "#fff",
               border: "none",
               borderRadius: "5px",
               cursor: "pointer",
               fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = "scale(1.05)";
+              e.target.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.3)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = "scale(1)";
+              e.target.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.2)";
             }}
           >
             Create New Course
@@ -273,13 +367,15 @@ const InstructorDashboard = () => {
               navigate(`/instructor/CreateAssessment/${selectedCourse}`)
             }
             style={{
-              padding: "10px 20px",
+              padding: "12px 30px",
               backgroundColor: selectedCourse ? "#28A745" : "#ccc",
               color: "#fff",
               border: "none",
               borderRadius: "5px",
               cursor: selectedCourse ? "pointer" : "not-allowed",
               fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
             }}
             disabled={!selectedCourse}
           >

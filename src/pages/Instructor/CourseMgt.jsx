@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 
@@ -65,6 +65,9 @@ const CourseManagementPage = () => {
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
+      <header style={{ marginBottom: "20px" }}>
+        <h2>Welcome to Course Management</h2>
+      </header>
       <h1>Course Management</h1>
 
       <table

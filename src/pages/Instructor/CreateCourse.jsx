@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import Header from "../Header";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import Header from "../Header";
 
 function CreateCourse() {
   const [course, setCourse] = useState({
@@ -35,12 +35,11 @@ function CreateCourse() {
         const categoryList = await response.json();
         setCategories(categoryList);
 
-        // Navigate to the "Create Category" page if the list is empty
         if (categoryList.length === 0) {
           toast.info(
             "No categories found. Redirecting to create category page."
           );
-          setTimeout(() => navigate("Course/category"), 1000); // Add slight delay for toast visibility
+          setTimeout(() => navigate("Course/category"), 1000); // Slight delay
         }
       } catch (error) {
         toast.error("Error fetching categories: " + error.message);
@@ -148,32 +147,82 @@ function CreateCourse() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        padding: "40px 20px",
+        background: "linear-gradient(135deg,rgba(0, 0, 0, 0.12),rgb(24, 17, 39))", // Gradient background
+        borderRadius: "10px",
+        boxShadow: "0 15px 40px rgba(0, 0, 0, 0.1)", // 3D effect
+        maxWidth: "900px",
+        margin: "0 auto",
+      }}
+    >
       <Header />
       <ToastContainer />
-      <h1>Create a New Course</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title:</label>
+      <h1
+        style={{
+          textAlign: "center",
+          color: "#fff",
+          marginBottom: "40px",
+          fontSize: "36px",
+          textTransform: "uppercase",
+        }}
+      >
+        Create a New Course
+      </h1>
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          backgroundColor: "#fff",
+          borderRadius: "8px",
+          padding: "20px",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Title:</label>
           <input
             type="text"
             name="title"
             value={course.title}
             onChange={handleInputChange}
             required
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
-        <div>
-          <label>Description:</label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Description:</label>
           <textarea
             name="description"
             value={course.description}
             onChange={handleInputChange}
             required
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
-        <div>
-          <label>Category:</label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Category:</label>
           {loadingCategories ? (
             <p>Loading categories...</p>
           ) : (
@@ -182,6 +231,14 @@ function CreateCourse() {
               value={course.category?.categoryId || ""}
               onChange={handleCategoryChange}
               required
+              style={{
+                padding: "12px",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+                fontSize: "16px",
+                transition: "all 0.3s ease-in-out",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              }}
             >
               <option value="" disabled>
                 Select a category
@@ -195,28 +252,46 @@ function CreateCourse() {
           )}
         </div>
 
-        <div>
-          <label>Price:</label>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Price:</label>
           <input
             type="number"
             name="price"
             value={course.price}
             onChange={handleInputChange}
             required
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
-        <div>
-          <label>Level:</label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Level:</label>
           <input
             type="text"
             name="level"
             value={course.level}
             onChange={handleInputChange}
             required
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         </div>
-        <div>
-          <label>Instructor:</label>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Instructor:</label>
           {loadingInstructors ? (
             <p>Loading instructors...</p>
           ) : (
@@ -224,13 +299,41 @@ function CreateCourse() {
           )}
         </div>
 
-        <button type="submit" disabled={isLoading}>
+        <button
+          type="submit"
+          disabled={isLoading}
+          style={{
+            backgroundColor: "#4caf50",
+            color: "#fff",
+            padding: "12px",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "18px",
+            cursor: "pointer",
+            transition: "all 0.3s ease-in-out",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+            marginTop: "20px",
+          }}
+        >
           {isLoading ? "Creating Course..." : "Create Course"}
         </button>
+
         <button
           type="button"
           disabled={isLoading}
-          onClick={() => navigate("/Course/category")} // Use a function reference
+          onClick={() => navigate("/Course/category")}
+          style={{
+            backgroundColor: "#2196f3",
+            color: "#fff",
+            padding: "12px",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "18px",
+            cursor: "pointer",
+            transition: "all 0.3s ease-in-out",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+            marginTop: "10px",
+          }}
         >
           {isLoading ? "Redirecting to category page..." : "Create Category"}
         </button>

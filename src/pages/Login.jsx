@@ -2,6 +2,7 @@ import Cookies from "js-cookie";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Added CSS import
 import Header from "./Header";
 
 const Login = () => {
@@ -9,9 +10,9 @@ const Login = () => {
     username: "",
     password: "",
   });
-  const [otp, setOtp] = useState(""); // State for OTP
-  const [otpSent, setOtpSent] = useState(false); // State to track OTP sent
-  const [loading, setLoading] = useState(false); // State for loading
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,15 +24,15 @@ const Login = () => {
   };
 
   const handleOtpChange = (e) => {
-    setOtp(e.target.value); // Handle OTP input change
+    setOtp(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (loading) return; // Prevent multiple submissions
+    if (loading) return;
 
-    setLoading(true); // Set loading to true
+    setLoading(true);
     try {
       if (otpSent) {
         // Verify OTP
@@ -46,29 +47,32 @@ const Login = () => {
           }
         );
 
+        const data = await response.json();
+
         if (response.ok) {
-          const data = await response.json();
-          toast.success("User Found!");
-          console.log("API Response:", data);
+          toast.success("Login successful!");
 
           // Store the user data in cookies
           Cookies.set("id", data.userId);
           Cookies.set("username", formdata.username);
           Cookies.set("role", data.role);
 
-          // Redirect based on the role
-          if (data.role === "TEACHER") {
-            navigate("/instructor");
-          } else if (data.role === "STUDENT") {
-            navigate("/student");
-          } else {
-            navigate("/Signup");
+          // Redirect based on role
+          switch (data.role) {
+            case "TEACHER":
+              navigate("/instructor");
+              break;
+            case "STUDENT":
+              navigate("/student");
+              break;
+            default:
+              navigate("/Admindashboard");
           }
         } else {
-          toast.error("Invalid OTP");
+          toast.error(data.message || "Invalid OTP");
         }
       } else {
-        // Regular login
+        // Initial login
         const response = await fetch("http://localhost:8080/api/users/login", {
           method: "POST",
           headers: {
@@ -77,26 +81,30 @@ const Login = () => {
           body: JSON.stringify(formdata),
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          if (response.status === 401) {
-            toast.error("Invalid password");
-          } else if (response.status === 404) {
-            toast.error("User not found");
-          } else {
-            toast.error("An unexpected error occurred");
+          switch (response.status) {
+            case 401:
+              toast.error(data.message || "Invalid password");
+              break;
+            case 404:
+              toast.error(data.message || "User not found");
+              break;
+            default:
+              toast.error(data.message || "An unexpected error occurred");
           }
           return;
         }
 
-        const data = await response.json();
-        toast.success("Login successful, please check your email for OTP.");
+        toast.success("OTP sent to your email!");
         setOtpSent(true);
       }
     } catch (error) {
-      console.error(error);
-      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
+      toast.error("Network error. Please try again later.");
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
@@ -111,7 +119,7 @@ const Login = () => {
         boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >
-      {/* <ToastContainer /> */}
+      <ToastContainer position="top-right" autoClose={3000} /> {/* Uncommented and configured */}
       <Header />
       <h2
         style={{
@@ -191,23 +199,22 @@ const Login = () => {
         )}
         <button
           type="submit"
-          disabled={loading} // Disable button when loading
+          disabled={loading}
           style={{
             marginTop: "30px",
             width: "97%",
             height: "40px",
             padding: "12px",
-            backgroundColor: loading ? "#B0B0B0" : "rgba(99, 21, 233, 0.7)", // Gray when loading
+            backgroundColor: loading ? "#B0B0B0" : "rgba(99, 21, 233, 0.7)",
             color: "#FFF",
             fontSize: "16px",
             fontWeight: "600",
             border: "none",
             borderRadius: "20px",
-            cursor: loading ? "not-allowed" : "pointer", // Prevent clicking when loading
+            cursor: loading ? "not-allowed" : "pointer",
             textTransform: "uppercase",
-            transition:
-              "background-color 0.3s, transform 0.4s, box-shadow 0.4s",
-            boxShadow: loading ? "none" : "0 4px 15px rgba(73, 10, 117, 0.35)", // Remove shadow when loading
+            transition: "background-color 0.3s, transform 0.4s, box-shadow 0.4s",
+            boxShadow: loading ? "none" : "0 4px 15px rgba(73, 10, 117, 0.35)",
           }}
         >
           {loading ? "Loading..." : otpSent ? "Verify OTP" : "Login"}

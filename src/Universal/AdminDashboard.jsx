@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import Header from "../pages/Header";
+import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "../pages/Header";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);

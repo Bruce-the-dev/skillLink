@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import Header from "../Header";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Header from "../Header";
 
 function CourseBrowsingPage() {
   const [courses, setCourses] = useState([]);
@@ -10,7 +10,6 @@ function CourseBrowsingPage() {
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch data from the backend API
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -23,7 +22,6 @@ function CourseBrowsingPage() {
         const coursesData = await coursesResponse.json();
         setCourses(coursesData);
 
-        // Extract unique categories from the courses
         const uniqueCategories = [
           ...new Set(
             coursesData
@@ -44,11 +42,9 @@ function CourseBrowsingPage() {
     fetchCourses();
   }, []);
 
-  // Update filtered courses whenever search query or selected category changes
   useEffect(() => {
     let filtered = courses;
 
-    // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(
         (course) =>
@@ -58,7 +54,6 @@ function CourseBrowsingPage() {
       );
     }
 
-    // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(
         (course) =>
@@ -67,7 +62,6 @@ function CourseBrowsingPage() {
       );
     }
 
-    // Remove courses with null values for title or category
     filtered = filtered.filter(
       (course) => course.title !== null && course.category !== null
     );
@@ -75,9 +69,8 @@ function CourseBrowsingPage() {
     setFilteredCourses(filtered);
   }, [searchQuery, selectedCategory, courses]);
 
-  // Handle enrolling in a course
   const handleEnroll = async (courseId) => {
-    const learnerId = 1; // Assuming the learner's ID is known
+    const learnerId = 1;
 
     try {
       const enrollResponse = await fetch(
@@ -108,16 +101,15 @@ function CourseBrowsingPage() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div style={styles.loading}>Loading...</div>;
   }
 
   return (
     <>
       <Header />
       <div style={styles.page}>
-        <h1>Browse Courses</h1>
+        <h1 style={styles.heading}>Browse Courses</h1>
 
-        {/* Search Bar */}
         <div style={styles.searchBar}>
           <input
             type="text"
@@ -128,9 +120,8 @@ function CourseBrowsingPage() {
           />
         </div>
 
-        {/* Filter by Category */}
         <div style={styles.filter}>
-          <label htmlFor="category">Filter by Category: </label>
+          <label htmlFor="category" style={styles.label}>Filter by Category: </label>
           <select
             id="category"
             value={selectedCategory}
@@ -146,13 +137,12 @@ function CourseBrowsingPage() {
           </select>
         </div>
 
-        {/* Course List */}
         <section style={styles.courseList}>
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
               <div key={course.courseId} style={styles.courseCard}>
-                <h3>{course.title}</h3>
-                <p>
+                <h3 style={styles.courseTitle}>{course.title}</h3>
+                <p style={styles.courseCategory}>
                   Category: {course.category ? course.category.name : "N/A"}
                 </p>
                 <button
@@ -164,7 +154,7 @@ function CourseBrowsingPage() {
               </div>
             ))
           ) : (
-            <p>No courses found.</p>
+            <p style={styles.noCourses}>No courses found.</p>
           )}
         </section>
       </div>
@@ -172,54 +162,103 @@ function CourseBrowsingPage() {
   );
 }
 
-// Inline styles for basic styling
 const styles = {
   page: {
-    fontFamily: "'Arial', sans-serif",
+    fontFamily: "'Poppins', sans-serif",
     margin: "0 auto",
-    maxWidth: "800px",
+    maxWidth: "900px",
     padding: "20px",
-    backgroundColor: "#f9f9f9",
-    borderRadius: "8px",
+    backgroundColor: "#f3e8ff",
+    borderRadius: "10px",
+    boxShadow: "0 4px 20px rgba(128, 0, 128, 0.3)",
+  },
+  heading: {
+    color: "#4a0072",
+    textAlign: "center",
+    marginBottom: "30px",
+    fontSize: "2.5rem",
+    fontWeight: "700",
   },
   searchBar: {
     marginBottom: "20px",
+    textAlign: "center",
+  },
+  input: {
+    width: "80%",
+    padding: "12px",
+    fontSize: "16px",
+    borderRadius: "10px",
+    border: "1px solid #9c27b0",
+    outline: "none",
+    transition: "box-shadow 0.3s",
+    boxShadow: "0 4px 10px rgba(128, 0, 128, 0.2)",
+  },
+  inputFocus: {
+    boxShadow: "0 0 10px rgba(128, 0, 128, 0.6)",
   },
   filter: {
     marginBottom: "20px",
+    textAlign: "center",
   },
-  input: {
-    width: "100%",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
+  label: {
+    fontSize: "18px",
+    color: "#4a0072",
   },
   select: {
     padding: "10px",
     fontSize: "16px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
+    borderRadius: "10px",
+    border: "1px solid #9c27b0",
+    backgroundColor: "#f8e1ff",
+    color: "#4a0072",
   },
   courseList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "20px",
   },
   courseCard: {
     padding: "15px",
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #9c27b0",
+    borderRadius: "10px",
+    boxShadow: "0 4px 15px rgba(128, 0, 128, 0.2)",
+    textAlign: "center",
+  },
+  courseTitle: {
+    fontSize: "20px",
+    color: "#4a0072",
+    fontWeight: "600",
+  },
+  courseCategory: {
+    fontSize: "16px",
+    color: "#6a0080",
   },
   button: {
-    padding: "10px 15px",
+    padding: "12px 20px",
     fontSize: "16px",
-    backgroundColor: "#4caf50",
+    backgroundColor: "#7b1fa2",
     color: "#fff",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "10px",
     cursor: "pointer",
+    transition: "transform 0.2s, box-shadow 0.2s",
+    boxShadow: "0 6px 10px rgba(128, 0, 128, 0.3)",
+  },
+  buttonHover : {
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 15px rgba(128, 0, 128, 0.4)",
+  },
+  noCourses: {
+    fontSize: "18px",
+    color: "#9c27b0",
+    textAlign: "center",
+  },
+  loading: {
+    fontSize: "20px",
+    color: "#4a0072",
+    textAlign: "center",
+    marginTop: "50px",
   },
 };
 

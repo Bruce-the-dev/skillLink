@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import GlobalSearch from "./GlobalSearch";
 
 const Dashboard = () => {
@@ -128,7 +128,8 @@ const Dashboard = () => {
                 style={{
                   ...styles.resultItem,
                   backgroundColor:
-                    activeResultIndex === index ? "#f0f0f0" : "#fff",
+                    activeResultIndex === index ? "#3d2c59" : "#fff",
+                  color: activeResultIndex === index ? "#fff" : "#000",
                 }}
               >
                 <strong>{type.toUpperCase()}:</strong>{" "}
@@ -151,28 +152,35 @@ const styles = {
     maxWidth: "800px",
     padding: "20px",
     fontFamily: "'Arial', sans-serif",
+    backgroundColor: "#f4f3f9",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
   filters: {
     display: "flex",
     justifyContent: "space-around",
     margin: "20px 0",
-    padding: "10px",
-    backgroundColor: "#f9f9f9",
+    padding: "15px",
+    backgroundColor: "#fff",
     borderRadius: "8px",
     border: "1px solid #ddd",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   },
   results: {
     margin: "20px auto",
     maxWidth: "800px",
     padding: "20px",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
     borderRadius: "8px",
     border: "1px solid #ddd",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   },
   resultItem: {
-    padding: "10px",
+    padding: "15px",
     borderBottom: "1px solid #ddd",
     cursor: "pointer",
+    transition: "all 0.3s",
+    borderRadius: "5px",
   },
   emptyState: {
     textAlign: "center",
