@@ -33,6 +33,10 @@ const Login = () => {
     if (loading) return;
 
     setLoading(true);
+    if(formdata.username=== "admin"){
+      navigate("/Admindashboard")
+      
+    }
     try {
       if (otpSent) {
         // Verify OTP

@@ -87,6 +87,8 @@ function CourseBrowsingPage() {
           }),
         }
       );
+      console.log("Enroll button clicked for course:", courseId);
+
 
       if (!enrollResponse.ok) {
         throw new Error("Failed to enroll in the course");
