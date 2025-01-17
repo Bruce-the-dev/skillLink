@@ -64,7 +64,7 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 className="nav-link"
-                to="/"
+                to="/login"
                 aria-current="page"
                 style={linkStyle}
               >
