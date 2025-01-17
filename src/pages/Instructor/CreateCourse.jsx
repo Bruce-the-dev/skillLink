@@ -19,6 +19,7 @@ function CreateCourse() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const timeout = 1500;
 
   const [cookies] = useCookies(["id"]);
   const instructorId = cookies.id;
@@ -30,7 +31,8 @@ function CreateCourse() {
           method: "GET",
         });
         if (!response.ok) {
-          throw new Error("Failed to fetch categories");
+          toast.error("Failed to fetch categories");
+          // setTimeout(() => {}, timeout);
         }
         const categoryList = await response.json();
         setCategories(categoryList);
@@ -39,7 +41,7 @@ function CreateCourse() {
           toast.info(
             "No categories found. Redirecting to create category page."
           );
-          setTimeout(() => navigate("Course/category"), 1000); // Slight delay
+          setTimeout(() => navigate("/Course/category"), 1000); // Slight delay
         }
       } catch (error) {
         toast.error("Error fetching categories: " + error.message);
@@ -94,7 +96,12 @@ function CreateCourse() {
     );
     setCourse({ ...course, category: selectedCategory });
   };
-
+  const handleLevelChange = (e) => {
+    setCourse({
+      ...course,
+      level: e.target.value,
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Data to submit:", course);
@@ -109,7 +116,6 @@ function CreateCourse() {
     };
 
     setIsLoading(true);
-
     try {
       const response = await fetch("http://localhost:8080/api/courses/create", {
         method: "POST",
@@ -151,7 +157,8 @@ function CreateCourse() {
       style={{
         fontFamily: "Arial, sans-serif",
         padding: "40px 20px",
-        background: "linear-gradient(135deg,rgba(0, 0, 0, 0.12),rgb(24, 17, 39))", // Gradient background
+        background:
+          "linear-gradient(135deg,rgba(0, 0, 0, 0.12),rgb(24, 17, 39))", // Gradient background
         borderRadius: "10px",
         boxShadow: "0 15px 40px rgba(0, 0, 0, 0.1)", // 3D effect
         maxWidth: "900px",
@@ -185,7 +192,9 @@ function CreateCourse() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Title:</label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Title:
+          </label>
           <input
             type="text"
             name="title"
@@ -204,7 +213,9 @@ function CreateCourse() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Description:</label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Description:
+          </label>
           <textarea
             name="description"
             value={course.description}
@@ -222,7 +233,9 @@ function CreateCourse() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Category:</label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Category:
+          </label>
           {loadingCategories ? (
             <p>Loading categories...</p>
           ) : (
@@ -253,7 +266,9 @@ function CreateCourse() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Price:</label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Price:
+          </label>
           <input
             type="number"
             name="price"
@@ -272,8 +287,10 @@ function CreateCourse() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Level:</label>
-          <input
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Level:
+          </label>
+          {/* <input
             type="text"
             name="level"
             value={course.level}
@@ -287,15 +304,64 @@ function CreateCourse() {
               transition: "all 0.3s ease-in-out",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
-          />
+          /> */}
+          <select
+            name="level"
+            value={course.level}
+            onChange={handleLevelChange}
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "16px",
+              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <option value="" disabled>
+              select a level
+            </option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Instructor:</label>
+          <label
+            style={{
+              fontSize: "16px",
+              marginBottom: "10px",
+              alignSelf: "flex-start",
+            }}
+          >
+            Instructor:
+          </label>
           {loadingInstructors ? (
             <p>Loading instructors...</p>
           ) : (
-            <p>{instructors.name}</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                backgroundColor: "#f5f5f5",
+                padding: "20px",
+                borderRadius: "8px",
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "#333",
+                  margin: "0",
+                }}
+              >
+                {instructors.name}
+              </p>
+            </div>
           )}
         </div>
 

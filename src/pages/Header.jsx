@@ -2,6 +2,15 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Logo from "./Logo.png";
 
+// Import Font Awesome Icons
+import {
+  faUser,
+  faSignOutAlt,
+  faInfoCircle,
+  faBell,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const Header = () => {
   return (
     <nav
@@ -53,11 +62,16 @@ const Header = () => {
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
               <Link className="nav-link" to="/login" style={linkStyle}>
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
                 Login
               </Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/about" style={linkStyle}>
+                <FontAwesomeIcon
+                  icon={faInfoCircle}
+                  style={{ marginRight: "5px" }}
+                />
                 About
               </Link>
             </li>
@@ -68,7 +82,23 @@ const Header = () => {
                 aria-current="page"
                 style={linkStyle}
               >
+                <FontAwesomeIcon
+                  icon={faSignOutAlt}
+                  style={{ marginRight: "5px" }}
+                />
                 Log out
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/notifications" style={linkStyle}>
+                <FontAwesomeIcon icon={faBell} style={{ marginRight: "5px" }} />
+                Notifications
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/profile" style={linkStyle}>
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
+                Profile
               </Link>
             </li>
           </ul>
@@ -88,6 +118,8 @@ const linkStyle = {
   padding: "8px 12px",
   borderRadius: "4px",
   transition: "all 0.3s ease-in-out",
+  display: "flex",
+  alignItems: "center",
 };
 
 // Hover Effects for Nav Links

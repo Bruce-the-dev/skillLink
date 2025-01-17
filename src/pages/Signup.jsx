@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./Header";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const [formdata, setformdata] = useState({
+  const [formdata, setFormdata] = useState({
     username: "",
     name: "",
     email: "",
@@ -14,17 +15,25 @@ const Signup = () => {
     ProfileImage: null,
   });
   const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const navigate = useNavigate();
+  const timeout = 2000; // Specify the delay time in milliseconds (e.g., 2000ms = 2 seconds)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setformdata({
+    setFormdata({
       ...formdata,
       [name]: value,
     });
   };
 
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);
+  };
+
   const handleRoleChange = (e) => {
-    setformdata({
+    setFormdata({
       ...formdata,
       role: e.target.value,
     });
@@ -34,51 +43,80 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Create a FormData object
-    const formData = new FormData();
+    if (!otpSent) {
+      // First submission: Sign up the user
+      const formData = new FormData();
+      const user = {
+        username: formdata.username,
+        name: formdata.name,
+        email: formdata.email,
+        password: formdata.password,
+        role: formdata.role,
+        skills: formdata.skills,
+      };
+      formData.append("user", JSON.stringify(user));
 
-    // Append user data as a JSON string
-    const user = {
-      username: formdata.username,
-      name: formdata.name,
-      email: formdata.email,
-      password: formdata.password,
-      role: formdata.role,
-      skills: formdata.skills,
-    };
-    formData.append("user", JSON.stringify(user));
-
-    // Append the profile image if it exists
-    if (formdata.ProfileImage) {
-      formData.append("imageFile", formdata.ProfileImage);
-    }
-
-    try {
-      const response = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        body: formData, // Send the FormData object
-      });
-
-      if (response.ok) {
-        toast.success("User created successfully");
-        setformdata({
-          username: "",
-          name: "",
-          email: "",
-          password: "",
-          role: "",
-          skills: "",
-          ProfileImage: null,
-        });
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Error creating user.");
+      if (formdata.ProfileImage) {
+        formData.append("imageFile", formdata.ProfileImage);
       }
-    } catch (error) {
-      toast.error("Failed to create user. Please try again later.");
-      console.error("Error is: ", error);
-    } finally {
-      setLoading(false);
+
+      try {
+        const response = await fetch("http://localhost:8080/api/users", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          toast.success(
+            "User created successfully. Please check your email for the OTP."
+          );
+          setOtpSent(true); // Show the OTP input field
+        } else {
+          const errorData = await response.json();
+          toast.error(errorData.message || "Error creating user.");
+        }
+      } catch (error) {
+        toast.error("Failed to create user. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Second submission: Verify OTP
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/users/verify-otp",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: formdata.username, otp }),
+          }
+        );
+
+        if (response.ok) {
+          toast.success("OTP verified successfully. Account is now active.");
+          setTimeout(() => {
+            navigate("/login");
+          }, timeout);
+          setFormdata({
+            username: "",
+            name: "",
+            email: "",
+            password: "",
+            role: "",
+            skills: "",
+            ProfileImage: null,
+          });
+          setOtp("");
+          setOtpSent(false); // Reset the form and OTP process
+        } else {
+          const data = await response.json();
+          toast.error(data.message || "Invalid OTP.");
+        }
+      } catch (error) {
+        toast.error("Failed to verify OTP. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -109,7 +147,7 @@ const Signup = () => {
               name="name"
               value={formdata.name}
               onChange={handleChange}
-              placeholder="Full Names"
+              placeholder="Full Name"
               required
               style={formStyles.input}
             />
@@ -161,7 +199,9 @@ const Signup = () => {
               onChange={handleRoleChange}
               style={formStyles.input}
             >
-              <option value="">Select a Role</option>
+              <option value="" disabled>
+                Select a Role
+              </option>
               <option value="STUDENT">Student</option>
               <option value="TEACHER">Teacher</option>
               <option value="ADMIN">Admin</option>
@@ -174,50 +214,59 @@ const Signup = () => {
             type="file"
             name="ProfileImage"
             onChange={(e) =>
-              setformdata({ ...formdata, ProfileImage: e.target.files[0] })
+              setFormdata({ ...formdata, ProfileImage: e.target.files[0] })
             }
             style={formStyles.input}
           />
           <span>Profile Image</span>
         </label>
 
-        <button type="submit" className="red" disabled={loading} 
-         style={{
-          marginTop: "30px",
-          width: "97%",
-          height: "40px",
-          padding: "12px",
-          backgroundColor: "rgba(99, 21, 233, 0.7)", // Deep purple
-          color: "#FFF",
-          fontSize: "16px",
-          fontWeight: "600",
-          border: "none",
-          borderRadius: "20px",
-          cursor: "pointer",
-          textTransform: "uppercase",
-          transition: "background-color 0.3s, transform 0.4s, box-shadow 0.4s",
-          boxShadow: "0 4px 15px rgba(73, 10, 117, 0.35)", // Initial soft shadow
-        }}
-        onMouseOver={(e) => {
-          e.target.style.backgroundColor = "linear-gradient(90deg, #8247E5, #B15CFF)"; // Gradient
-          e.target.style.boxShadow = "0 10px 30px rgba(130, 71, 229, 0.7)"; // Stronger glow
-          e.target.style.transform = "scale(1.1) translateY(-5px)"; // Slight enlargement and lift
-        }}
-        onMouseOut={(e) => {
-          e.target.style.backgroundColor = "#6A0DAD"; // Reset to original purple
-          e.target.style.boxShadow = "0 4px 15px rgba(106, 13, 173, 0.3)"; // Reset shadow
-          e.target.style.transform = "scale(1) translateY(0)"; // Reset size and position
-        }}
-        onMouseDown={(e) => {
-          e.target.style.transform = "scale(0.95)"; // Slight shrink on click
-          e.target.style.boxShadow = "0 2px 10px rgba(106, 13, 173, 0.5)"; // Dim glow on press
-        }}
-        onMouseUp={(e) => {
-          e.target.style.transform = "scale(1.1) translateY(-5px)"; // Return to hover state
-          e.target.style.boxShadow = "0 10px 30px rgba(130, 71, 229, 0.7)";
-        }}
-      >
-          {loading ? "Saving..." : "Create account"}
+        {otpSent && (
+          <label style={{ display: "block", marginTop: "16px" }}>
+            <span
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                fontWeight: "600",
+              }}
+            >
+              Enter OTP:
+            </span>
+            <input
+              type="text"
+              value={otp}
+              onChange={handleOtpChange}
+              required
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "20px",
+                border: "1px solid #ddd",
+              }}
+            />
+          </label>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            marginTop: "30px",
+            width: "97%",
+            height: "40px",
+            padding: "12px",
+            backgroundColor: loading ? "#B0B0B0" : "rgba(99, 21, 233, 0.7)",
+            color: "#FFF",
+            fontSize: "16px",
+            fontWeight: "600",
+            border: "none",
+            borderRadius: "20px",
+            cursor: loading ? "not-allowed" : "pointer",
+            textTransform: "uppercase",
+            boxShadow: loading ? "none" : "0 4px 15px rgba(73, 10, 117, 0.35)",
+          }}
+        >
+          {loading ? "Loading..." : otpSent ? "Verify OTP" : "Sign Up"}
         </button>
 
         <ToastContainer position="top-center" />
@@ -226,47 +275,29 @@ const Signup = () => {
   );
 };
 
-// Inline CSS in JS
 const formStyles = {
-  form: { 
-    marginLeft: "360px",
-    padding: "32px", // Increased padding for a bigger form
-    width: "700px", // Increased width for a larger form
+  form: {
     margin: "0 auto",
+    padding: "32px",
+    width: "700px",
     backgroundColor: "#EBECF0",
     borderRadius: "16px",
   },
-  segment: {
-    padding: "32px 0",
-    textAlign: "center",
-  },
-  label: {
-    display: "block",
-    marginBottom: "24px",
-    width: "100%",
-  },
+  segment: { padding: "32px 0", textAlign: "center" },
+  label: { display: "block", marginBottom: "24px", width: "100%" },
   input: {
-    marginRight: "8px",
     padding: "8px",
-    boxShadow: "inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF",
     width: "100%",
-    boxSizing: "border-box",
-    transition: "all 0.2s ease-in-out",
     borderRadius: "20px",
     border: "none",
     outline: "none",
     fontSize: "16px",
   },
-  fileInput: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  
+  fileInput: { display: "flex", justifyContent: "space-between" },
   flexContainer: {
     display: "flex",
     justifyContent: "space-between",
-    gap: "16px",  // Space between elements
+    gap: "16px",
   },
 };
 
