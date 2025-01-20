@@ -1,17 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Logo from "./Logo.png";
-
+import Cookies from "js-cookie";
 // Import Font Awesome Icons
 import {
   faUser,
   faSignOutAlt,
   faInfoCircle,
   faBell,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Header = () => {
+  const role = Cookies.get("role");
+  const isLoggedIn = !!role;
   return (
     <nav
       className="navbar navbar-expand-lg"
@@ -60,12 +63,46 @@ const Header = () => {
         {/* Navbar Links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/login" style={linkStyle}>
-                <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
-                Login
-              </Link>
-            </li>
+            {/* Render login button only if not logged in */}
+            {!isLoggedIn && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/login" style={linkStyle}>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    style={{ marginRight: "5px" }}
+                  />
+                  Login
+                </Link>
+              </li>
+            )}
+
+            {isLoggedIn && (
+              <>
+                <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    to="/notifications"
+                    style={linkStyle}
+                  >
+                    <FontAwesomeIcon
+                      icon={faBell}
+                      style={{ marginRight: "5px" }}
+                    />
+                    Notifications
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/profile" style={linkStyle}>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: "5px" }}
+                    />
+                    Profile
+                  </Link>
+                </li>
+              </>
+            )}
+
             <li className="nav-item">
               <Link className="nav-link" to="/about" style={linkStyle}>
                 <FontAwesomeIcon
@@ -78,27 +115,23 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 className="nav-link"
-                to="/login"
+                to={isLoggedIn ? "/login" : "/"} // Redirect to "/logout" if logged in, "/signup" otherwise
                 aria-current="page"
                 style={linkStyle}
+                onClick={() => {
+                  Cookies.remove("token"); // Clear the token cookie
+                  Cookies.remove("id"); // Clear the id cookie
+                  Cookies.remove("role"); // Clear the role cookie
+                  Cookies.remove("username"); // Clear the username cookie
+                  // Add any other necessary cookie clearing here
+                }}
               >
                 <FontAwesomeIcon
-                  icon={faSignOutAlt}
+                  icon={isLoggedIn ? faSignOutAlt : faUserPlus} // Use appropriate icon
                   style={{ marginRight: "5px" }}
                 />
-                Log out
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/notifications" style={linkStyle}>
-                <FontAwesomeIcon icon={faBell} style={{ marginRight: "5px" }} />
-                Notifications
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/profile" style={linkStyle}>
-                <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
-                Profile
+                {isLoggedIn ? "Log out" : "Sign up"}{" "}
+                {/* Button text based on login state */}
               </Link>
             </li>
           </ul>

@@ -18,7 +18,7 @@ const Signup = () => {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
-  const timeout = 2000; // Specify the delay time in milliseconds (e.g., 2000ms = 2 seconds)
+  const timeout = 1000; // Specify the delay time in milliseconds (e.g., 2000ms = 2 seconds)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,6 +43,11 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
 
+    if (!formdata.role) {
+      toast.error("Please select a role.");
+      setLoading(false);
+      return;
+    }
     if (!otpSent) {
       // First submission: Sign up the user
       const formData = new FormData();
