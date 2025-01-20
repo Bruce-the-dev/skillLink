@@ -156,6 +156,7 @@ function CourseDetailPage() {
       setIsEnrolled(false);
       setEnrollmentId(null);
       toast.success("You have successfully dropped out of the course.");
+      navigate("/student");
     } catch (error) {
       console.error("Error dropping out:", error);
       toast.error("Failed to drop out of the course.");

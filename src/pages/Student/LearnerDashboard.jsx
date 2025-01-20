@@ -22,14 +22,14 @@ function LearnerDashboard() {
       console.log("No learner ID found.");
       setIsLoading(false); // Stop loading when ID is missing
       return;
-    }else{
-      console.log("Learner ID:", learnerId);
+    } else {
+      // console.log("Learner ID:", learnerId);
     }
   }, [learnerId]);
 
   useEffect(() => {
     if (learnerId) {
-      console.log(learnerId);
+      // console.log(learnerId);
       const fetchDashboardData = async () => {
         setIsLoading(true);
         try {
@@ -42,7 +42,7 @@ function LearnerDashboard() {
           }
           const coursesData = await coursesResponse.json();
           setCourses(coursesData);
-          console.log(courses);
+          // console.log(courses);
 
           // Fetch Notifications
           const notificationsResponse = await fetch(
@@ -204,10 +204,7 @@ function LearnerDashboard() {
 
         {/* Browse Courses Button */}
         <section style={styles.section}>
-          <button
-            onClick={handleBrowseCourses}
-            style={styles.browseButton}
-          >
+          <button onClick={handleBrowseCourses} style={styles.browseButton}>
             Browse Available Courses
           </button>
         </section>

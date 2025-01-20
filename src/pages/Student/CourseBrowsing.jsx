@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Header from "../Header";
+import { useCookies } from "react-cookie";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function CourseBrowsingPage() {
   const [courses, setCourses] = useState([]);
@@ -9,6 +11,9 @@ function CourseBrowsingPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [Cookies] = useCookies(["id"]);
+  const learnerId = Cookies.id;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -69,9 +74,15 @@ function CourseBrowsingPage() {
     setFilteredCourses(filtered);
   }, [searchQuery, selectedCategory, courses]);
 
-  const handleEnroll = async (courseId) => {
-    const learnerId = 1;
-
+  const handleEnroll = async (course) => {
+    // const learnerId = 1;
+    setIsLoading(true);
+    // console.log(course.courseId);
+    if (!learnerId) {
+      toast.warning("Please log in to enroll in courses.");
+      setIsLoading(false);
+      return;
+    }
     try {
       const enrollResponse = await fetch(
         `http://localhost:8080/api/enrollments/enroll`,
@@ -82,13 +93,11 @@ function CourseBrowsingPage() {
           },
           body: JSON.stringify({
             user: { userId: learnerId },
-            course: { courseId: courseId },
+            course: { courseId: course.courseId },
             enrollmentDate: new Date().toISOString(),
           }),
         }
       );
-      console.log("Enroll button clicked for course:", courseId);
-
 
       if (!enrollResponse.ok) {
         throw new Error("Failed to enroll in the course");
@@ -96,6 +105,10 @@ function CourseBrowsingPage() {
 
       await enrollResponse.json();
       toast.success("You have successfully enrolled in the course!");
+      // Send a notification after successful enrollment
+      console.log("choose the course:", course.title);
+      await sendnotification(course.title);
+      navigate("/student");
     } catch (error) {
       console.error("Error enrolling in course:", error);
       toast.error("Failed to enroll in the course.");
@@ -105,6 +118,45 @@ function CourseBrowsingPage() {
   if (isLoading) {
     return <div style={styles.loading}>Loading...</div>;
   }
+  const sendnotification = async (courseName) => {
+    if (!learnerId || !courseName) {
+      toast.error("Missing learner or course information.");
+      return;
+    }
+
+    try {
+      console.log(learnerId);
+      const notificationResponse = await fetch(
+        `http://localhost:8080/api/notifications/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: { userId: learnerId },
+            message: `You have a new course to take!! ${courseName}`,
+          }),
+        }
+      );
+
+      if (!notificationResponse.ok) {
+        const errorMessage = await notificationResponse.text();
+        console.warn("Notification failed:", notificationError);
+        toast.warning(`Failed to send notification: ${errorMessage}`);
+      }
+
+      const responseData = await notificationResponse.json();
+      console.log("Notification sent successfully:", responseData);
+      toast.success("Notification sent successfully!");
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      toast.error(error.message || "Failed to send notification.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -123,7 +175,9 @@ function CourseBrowsingPage() {
         </div>
 
         <div style={styles.filter}>
-          <label htmlFor="category" style={styles.label}>Filter by Category: </label>
+          <label htmlFor="category" style={styles.label}>
+            Filter by Category:{" "}
+          </label>
           <select
             id="category"
             value={selectedCategory}
@@ -149,7 +203,7 @@ function CourseBrowsingPage() {
                 </p>
                 <button
                   style={styles.button}
-                  onClick={() => handleEnroll(course.courseId)}
+                  onClick={() => handleEnroll(course)}
                 >
                   Enroll
                 </button>
@@ -247,7 +301,7 @@ const styles = {
     transition: "transform 0.2s, box-shadow 0.2s",
     boxShadow: "0 6px 10px rgba(128, 0, 128, 0.3)",
   },
-  buttonHover : {
+  buttonHover: {
     transform: "translateY(-2px)",
     boxShadow: "0 8px 15px rgba(128, 0, 128, 0.4)",
   },

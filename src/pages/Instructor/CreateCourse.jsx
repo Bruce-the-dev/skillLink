@@ -106,6 +106,11 @@ function CreateCourse() {
     e.preventDefault();
     console.log("Data to submit:", course);
 
+    if (!instructorId || isNaN(instructorId)) {
+      toast.error("Instructor ID is missing or invalid.");
+      return;
+    }
+
     const courseData = {
       title: course.title,
       description: course.description,
@@ -116,7 +121,9 @@ function CreateCourse() {
     };
 
     setIsLoading(true);
+
     try {
+      // Create course
       const response = await fetch("http://localhost:8080/api/courses/create", {
         method: "POST",
         headers: {
@@ -128,15 +135,17 @@ function CreateCourse() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Backend error response:", errorData);
-        throw new Error(errorData.message || "Failed to create course");
+        throw new Error(errorData.error || "Failed to create course");
       }
 
       const createdCourse = await response.json();
       console.log("Course created successfully:", createdCourse);
-      setTimeout(() => {
-        navigate("/instructor");
-      });
+      toast.success("Course created successfully!");
 
+      // Send notification
+      await sendnotification(course.title, instructorId);
+
+      // Reset form
       setCourse({
         title: "",
         description: "",
@@ -144,11 +153,66 @@ function CreateCourse() {
         price: "",
         level: "",
       });
-      toast.success("Course created successfully!");
+      // Navigate after success
+      setTimeout(() => {
+        navigate("/instructor");
+      }, 3000);
     } catch (error) {
+      console.error("Error creating course:", error);
       toast.error("Error: " + error.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const sendnotification = async (courseName, learnerId) => {
+    if (!learnerId || isNaN(learnerId)) {
+      toast.error("Learner ID is missing or invalid.");
+      console.error("Invalid Learner ID:", learnerId);
+      return;
+    }
+
+    if (!courseName) {
+      toast.error("Missing course information.");
+      return;
+    }
+
+    const notificationPayload = {
+      user: { userId: learnerId },
+      message: `You have created the new course: ${courseName}!! `,
+    };
+
+    try {
+      console.log("Notification payload:", notificationPayload);
+
+      const notificationResponse = await fetch(
+        `http://localhost:8080/api/notifications/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(notificationPayload),
+        }
+      );
+
+      const responseData = await notificationResponse.json();
+
+      if (!notificationResponse.ok) {
+        console.error("Notification error:", responseData);
+        toast.warning(
+          `Failed to send notification: ${
+            responseData.message || "An error occurred."
+          }`
+        );
+        return;
+      }
+
+      console.log("Notification sent successfully:", responseData);
+      toast.success("You have a new notification!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      toast.error(error.message || "Failed to send notification.");
     }
   };
 
@@ -290,21 +354,7 @@ function CreateCourse() {
           <label style={{ fontSize: "16px", marginBottom: "10px" }}>
             Level:
           </label>
-          {/* <input
-            type="text"
-            name="level"
-            value={course.level}
-            onChange={handleInputChange}
-            required
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              fontSize: "16px",
-              transition: "all 0.3s ease-in-out",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          /> */}
+
           <select
             name="level"
             value={course.level}

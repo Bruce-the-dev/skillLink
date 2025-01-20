@@ -92,6 +92,44 @@ const InstructorDashboard = () => {
       </div>
     );
   }
+  const handleNotificationClick = async (notificationId) => {
+    console.log("Notification clicked:", notificationId);
+
+    try {
+      // Make the API call to update the notification status
+      const response = await fetch(
+        `http://localhost:8080/api/notifications/updateStatus/${notificationId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json", // Set Content-Type
+          },
+          body: JSON.stringify({
+            notificationId: notificationId,
+            status: "read",
+          }), // Set the status to read
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to mark notification as read.");
+      }
+
+      // Update the notifications state locally
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notif) =>
+          notif.notificationId === notificationId
+            ? { ...notif, status: "Read" }
+            : notif
+        )
+      );
+
+      toast.success("Notification marked as read!");
+    } catch (error) {
+      console.error("Error updating notification status:", error);
+      toast.error("Failed to mark notification as read.");
+    }
+  };
 
   return (
     <>
@@ -104,7 +142,8 @@ const InstructorDashboard = () => {
           padding: "20px",
           maxWidth: "1200px",
           margin: "0 auto",
-          background: "linear-gradient(135deg,rgba(70, 59, 97, 0.39),rgb(26, 19, 41))", // Purple gradient
+          background:
+            "linear-gradient(135deg,rgba(70, 59, 97, 0.39),rgb(26, 19, 41))", // Purple gradient
           borderRadius: "20px", // Rounded corners
           boxShadow: "0 10px 30px rgba(0, 0, 0, 1)", // 3D shadow
         }}
@@ -246,28 +285,59 @@ const InstructorDashboard = () => {
                     <td style={{ padding: "12px" }}>${course.price}</td>
                     <td style={{ padding: "12px" }}>
                       <button
-                        onClick={() => setSelectedCourse(course.courseId)}
+                        onClick={() =>
+                          setSelectedCourse((prevSelected) =>
+                            prevSelected === course.courseId
+                              ? null
+                              : course.courseId
+                          )
+                        }
                         style={{
                           padding: "10px 20px",
-                          backgroundColor: "#7a57d1",
+                          backgroundColor:
+                            selectedCourse === course.courseId
+                              ? "#28a745"
+                              : "#7a57d1", // Green for selected
                           color: "#fff",
                           border: "none",
                           borderRadius: "5px",
                           cursor: "pointer",
                           fontSize: "14px",
                           transition: "all 0.3s ease-in-out",
+                          opacity:
+                            selectedCourse && selectedCourse !== course.courseId
+                              ? 0.5
+                              : 1, // Dim unselected buttons
+                          pointerEvents:
+                            selectedCourse && selectedCourse !== course.courseId
+                              ? "none"
+                              : "auto", // Disable unselected buttons
                           boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
                         }}
                         onMouseOver={(e) => {
-                          e.target.style.transform = "scale(1.05)";
-                          e.target.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.3)";
+                          if (
+                            !selectedCourse ||
+                            selectedCourse === course.courseId
+                          ) {
+                            e.target.style.transform = "scale(1.05)";
+                            e.target.style.boxShadow =
+                              "0 10px 20px rgba(0, 0, 0, 0.3)";
+                          }
                         }}
                         onMouseOut={(e) => {
-                          e.target.style.transform = "scale(1)";
-                          e.target.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.2)";
+                          if (
+                            !selectedCourse ||
+                            selectedCourse === course.courseId
+                          ) {
+                            e.target.style.transform = "scale(1)";
+                            e.target.style.boxShadow =
+                              "0 5px 15px rgba(0, 0, 0, 0.2)";
+                          }
                         }}
                       >
-                        Select
+                        {selectedCourse === course.courseId
+                          ? "Selected"
+                          : "Select"}
                       </button>
                     </td>
                   </tr>
@@ -304,19 +374,41 @@ const InstructorDashboard = () => {
             >
               {notifications.map((notification, index) => (
                 <li
-                  key={index}
+                  key={notification.notificationId}
                   style={{
                     padding: "12px",
                     borderBottom:
                       index !== notifications.length - 1
                         ? "1px solid #ddd"
                         : "none",
+                    backgroundColor:
+                      notification.status === "unread" ? "#f0f8ff" : "#fff",
+                    fontWeight:
+                      notification.status === "unread" ? "bold" : "normal",
                     transition: "background-color 0.3s ease-in-out",
+                    cursor: "pointer",
                   }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = "#e9e9e9"}
-                  onMouseOut={(e) => e.target.style.backgroundColor = "#fff"}
+                  onMouseOver={(e) =>
+                    (e.target.style.backgroundColor = "#e9e9e9")
+                  }
+                  onMouseOut={(e) =>
+                    (e.target.style.backgroundColor =
+                      notification.status === "unread" ? "#f0f8ff" : "#fff")
+                  }
+                  onClick={() =>
+                    handleNotificationClick(notification.notificationId)
+                  }
                 >
-                  {notification}
+                  <strong>{notification.user?.name || "Unknown User"}</strong> -{" "}
+                  {notification.message} (
+                  <span
+                    style={{
+                      color: notification.status === "unread" ? "red" : "green",
+                    }}
+                  >
+                    {notification.status || "Unknown"}
+                  </span>
+                  )
                 </li>
               ))}
             </ul>
