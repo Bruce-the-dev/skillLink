@@ -45,6 +45,7 @@ const AssessmentCreation = () => {
       course: newAssessment.course, // Send course ID
       type: newAssessment.type,
       maxScore: newAssessment.maxScore,
+      deadline: newAssessment.deadline,
     };
 
     try {
@@ -119,7 +120,9 @@ const AssessmentCreation = () => {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Course: </label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Course:{" "}
+          </label>
           <input
             type="text"
             value={courseName}
@@ -136,7 +139,9 @@ const AssessmentCreation = () => {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Assessment Title: </label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Assessment Title:{" "}
+          </label>
           <input
             type="text"
             value={newAssessment.title}
@@ -156,7 +161,9 @@ const AssessmentCreation = () => {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Deadline: </label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Deadline:{" "}
+          </label>
           <input
             type="date"
             value={newAssessment.deadline}
@@ -176,7 +183,9 @@ const AssessmentCreation = () => {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Type: </label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Type:{" "}
+          </label>
           <select
             value={newAssessment.type}
             onChange={(e) =>
@@ -200,7 +209,9 @@ const AssessmentCreation = () => {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label style={{ fontSize: "16px", marginBottom: "10px" }}>Max Score: </label>
+          <label style={{ fontSize: "16px", marginBottom: "10px" }}>
+            Max Score:{" "}
+          </label>
           <input
             type="number"
             value={newAssessment.maxScore}

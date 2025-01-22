@@ -53,7 +53,7 @@ function LearnerDashboard() {
           }
           const notificationsData = await notificationsResponse.json();
           setNotifications(notificationsData);
-
+          console.log("notifications: ", notifications);
           // Fetch Achievements
           const achievementsResponse = await fetch(
             `http://localhost:8080/api/achievements/user/${learnerId}`
