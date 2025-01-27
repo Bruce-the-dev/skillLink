@@ -15,6 +15,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Header = () => {
   const role = Cookies.get("role");
   const isLoggedIn = !!role;
+  const getRedirectPath = () => {
+    if (!isLoggedIn) return "/";
+
+    switch (role.toLowerCase()) {
+      case "teacher":
+        return "/instructor";
+      case "student":
+        return "/student";
+      case "admin":
+        return "/dashboard";
+      default:
+        return "/";
+    }
+  };
+
   return (
     <nav
       className="navbar navbar-expand-lg"
@@ -33,7 +48,7 @@ const Header = () => {
         {/* Brand Logo */}
         <Link
           className="navbar-brand d-flex align-items-center"
-          to="/"
+          to={getRedirectPath()}
           style={{ color: "#fff", textDecoration: "none" }}
         >
           <img

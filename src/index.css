@@ -23,7 +23,7 @@ body {
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
-  background-image: url('body.jpeg');
+  background-image: url("body.jpeg");
   background-attachment: fixed;
   background-size: cover; /* Optional: Ensures the background image covers the entire viewport */
   background-position: center; /* Optional: Centers the background image */
@@ -72,5 +72,17 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+  /* In App.css or your main CSS file */
+  .active-link {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    ); /* Slight background on active link */
+    color: #2575fc; /* Active link color */
+    border-radius: 4px;
+    font-weight: bold;
   }
 }
